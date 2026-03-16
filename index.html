@@ -2,942 +2,925 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AquaChem-UAE | Pool Chemical Engineering Calculator</title>
+  <title>HydroDose Pool Chem Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #050910;
-      --bg-alt: #0b1724;
-      --card: #111c2a;
-      --accent: #1fb6ff;
-      --accent-soft: rgba(31,182,255,0.18);
-      --accent-strong: #00ffd0;
-      --text: #f5f7fa;
-      --muted: #9fb3c8;
-      --danger: #ff6b6b;
-      --border: #1f3348;
-      --radius: 10px;
+      --bg: #05070b;
+      --bg-alt: #0c1018;
+      --card: #141a24;
+      --accent: #00d1ff;
+      --accent-soft: rgba(0, 209, 255, 0.15);
+      --text: #f5f7fb;
+      --muted: #9aa4b8;
+      --danger: #ff5c7a;
+      --border: #222a38;
+      --success: #4fd1c5;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #16324f 0, #050b12 55%, #020509 100%);
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #10182a 0, #05070b 55%);
       color: var(--text);
-      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
     }
-    header {
-      padding: 20px 16px 10px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0 0 6px;
-      font-size: 1.8rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    main {
+
+    .app-shell {
+      width: 100%;
       max-width: 1200px;
-      margin: 0 auto 40px;
-      padding: 0 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #111827, #020617);
+      border-radius: 20px;
+      padding: 18px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .repo-tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .repo-tag span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 16px;
     }
+
     @media (max-width: 900px) {
-      main { grid-template-columns: minmax(0, 1fr); }
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
+
     .card {
-      background: linear-gradient(145deg, rgba(17,28,42,0.96), rgba(7,14,24,0.98));
-      border-radius: var(--radius);
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
-      padding: 18px 18px 16px;
+      box-shadow: var(--shadow-soft);
+      padding: 16px 16px 18px;
       position: relative;
       overflow: hidden;
     }
+
     .card::before {
       content: "";
       position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 0 0, rgba(31,182,255,0.16), transparent 55%),
-        radial-gradient(circle at 100% 0, rgba(0,255,188,0.12), transparent 55%);
-      opacity: 0.9;
+      inset: 0;
+      background: radial-gradient(circle at top right, var(--accent-soft), transparent 60%);
+      opacity: 0.7;
       pointer-events: none;
-      z-index: -1;
     }
-    h2 {
-      margin: 0 0 10px;
-      font-size: 1.05rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #e4f1ff;
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
     }
-    .section-subtitle {
-      margin: 0 0 14px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px 14px;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px 10px;
-    }
-    @media (max-width: 700px) {
-      .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
-    }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-      color: var(--muted);
-    }
-    .field {
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
       margin-bottom: 10px;
     }
-    input, textarea {
-      width: 100%;
-      padding: 7px 9px;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-      background: rgba(4,10,18,0.9);
-      color: var(--text);
+
+    .card-title {
       font-size: 0.9rem;
-      outline: none;
-      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
-      resize: vertical;
-    }
-    input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(31,182,255,0.4);
-      background: rgba(6,14,24,0.95);
-    }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type="number"] { -moz-appearance: textfield; }
-    .inline-note {
-      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       color: var(--muted);
-      margin-top: 2px;
     }
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 6px 0 4px;
-    }
-    .pill {
-      padding: 4px 9px;
+
+    .card-pill {
+      font-size: 0.7rem;
+      padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      font-size: 0.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
       color: var(--muted);
-      cursor: pointer;
-      background: rgba(7,16,27,0.9);
-      transition: background 0.15s, border 0.15s, color 0.15s;
-      user-select: none;
     }
-    .pill.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .field small {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    input,
+    select,
+    textarea {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      padding: 7px 9px;
       color: var(--text);
+      font-size: 0.8rem;
+      outline: none;
+      width: 100%;
     }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .inline-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+    }
+
+    .badge-uae {
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #bbf7d0;
+    }
+
     .btn-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 12px;
     }
+
     button {
       border-radius: 999px;
       border: none;
-      padding: 7px 16px;
-      font-size: 0.9rem;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: linear-gradient(135deg, #1fb6ff, #00d2ff);
-      color: #02101f;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-      transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
     }
-    button:hover {
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #22c55e);
+      color: #0b1120;
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.45);
+    }
+
+    .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.7);
-      filter: brightness(1.05);
+      box-shadow: 0 14px 30px rgba(34, 197, 94, 0.6);
     }
-    button.secondary {
-      background: transparent;
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.9);
       color: var(--muted);
-      border: 1px solid var(--border);
-      box-shadow: none;
-      text-transform: none;
-      font-weight: 500;
-      letter-spacing: 0.01em;
+      border: 1px solid rgba(148, 163, 184, 0.4);
     }
-    .results-group {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed rgba(159,179,200,0.35);
+
+    .btn-ghost:hover {
+      background: rgba(30, 64, 175, 0.4);
+      color: var(--text);
     }
-    .results-title {
-      font-size: 0.8rem;
+
+    .btn-danger {
+      background: rgba(127, 29, 29, 0.9);
+      color: #fecaca;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+
+    .btn-danger:hover {
+      background: rgba(185, 28, 28, 0.95);
+    }
+
+    .report-shell {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 80vh;
+      overflow: auto;
+    }
+
+    .report-header {
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+      padding-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .report-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .report-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .report-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .report-meta span {
+      color: var(--text);
+    }
+
+    .report-section {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(51, 65, 85, 0.9);
+    }
+
+    .report-section-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       color: var(--muted);
       margin-bottom: 4px;
     }
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 0.9rem;
-      padding: 4px 0;
-    }
-    .result-label {
-      color: var(--muted);
-    }
-    .result-value {
-      font-variant-numeric: tabular-nums;
-      font-weight: 600;
-    }
-    .tag {
-      display: inline-flex;
-      align-items: center;
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(159,179,200,0.4);
-      font-size: 0.75rem;
+    }
+
+    @media (max-width: 640px) {
+      .report-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .metric-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       color: var(--muted);
-      margin-bottom: 6px;
     }
-    .tag-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px rgba(31,182,255,0.7);
-    }
-    .small {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-    .divider {
-      margin: 10px 0 8px;
-      border-top: 1px dashed rgba(159,179,200,0.35);
-    }
-    .highlight {
-      color: #e4f1ff;
+
+    .metric-value {
+      font-size: 0.9rem;
       font-weight: 600;
+      color: var(--text);
     }
-    .warning {
-      margin-top: 8px;
-      padding: 7px 9px;
-      border-radius: 7px;
-      background: rgba(255,107,107,0.06);
-      border: 1px solid rgba(255,107,107,0.4);
-      font-size: 0.78rem;
-      color: #ffdede;
+
+    .metric-unit {
+      font-size: 0.7rem;
+      color: var(--muted);
     }
-    .warning strong { color: #ffe3e3; }
-    #report-box {
-      min-height: 200px;
-      font-family: "SF Mono", Menlo, Consolas, monospace;
-      font-size: 0.8rem;
-      white-space: pre-wrap;
+
+    .note-text {
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.4;
     }
-    #report-print {
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+    }
+
+    .pill-chem {
+      border-color: rgba(56, 189, 248, 0.7);
+      color: #bae6fd;
+    }
+
+    .pill-acid {
+      border-color: rgba(248, 250, 252, 0.6);
+      color: #e5e7eb;
+    }
+
+    .pill-brand {
+      border-color: rgba(94, 234, 212, 0.7);
+      color: #a5f3fc;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 0.75rem;
+    }
+
+    .report-table th,
+    .report-table td {
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    .report-table th {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .report-table td strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .tag-msds {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .tag-msds span {
+      color: var(--accent);
+    }
+
+    .print-only {
       display: none;
-      white-space: pre-wrap;
-      font-family: "SF Mono", Menlo, Consolas, monospace;
-      font-size: 0.8rem;
-      color: #000;
     }
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.4rem; }
-      button { width: 100%; justify-content: center; }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      header,
+      .card {
+        box-shadow: none !important;
+      }
+      .btn-row,
+      .repo-tag {
+        display: none !important;
+      }
+      .print-only {
+        display: block;
+      }
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>AquaChem-UAE | Pool Chemical Engineering Calculator</h1>
-  <p>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS – UAE climate, HTH granular &amp; sodium bisulfate.</p>
-</header>
-
-<main>
-  <!-- INPUTS -->
-  <section class="card">
-    <h2>Project &amp; pool data</h2>
-    <p class="section-subtitle">
-      Enter project identifiers and hydraulic data. Volume and area can be entered directly or derived from geometry.
-    </p>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="project-name">Project name</label>
-        <input type="text" id="project-name" placeholder="e.g. Hotel Rooftop Pool – Sharjah" />
-      </div>
-      <div class="field">
-        <label for="project-ref">Project ref</label>
-        <input type="text" id="project-ref" placeholder="e.g. PRJ-POOL-2025-001" />
-      </div>
-    </div>
-
-    <div class="tag">
-      <span class="tag-dot"></span>
-      <span>Chlorine source: HTH Granular calcium hypochlorite (65–68% available chlorine)</span>
-    </div>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="volume">Pool volume (m³)</label>
-        <input type="number" id="volume" step="0.1" placeholder="e.g. 170" />
-        <div class="inline-note">If blank, volume is computed from length × width × average depth.</div>
-      </div>
-      <div class="field">
-        <label for="area">Pool surface area (m²)</label>
-        <input type="number" id="area" step="0.1" placeholder="e.g. 85" />
-        <div class="inline-note">If blank, area is computed from length × width.</div>
-      </div>
-    </div>
-
-    <div class="grid-3">
-      <div class="field">
-        <label for="length">Length (m)</label>
-        <input type="number" id="length" step="0.1" placeholder="optional" />
-      </div>
-      <div class="field">
-        <label for="width">Width (m)</label>
-        <input type="number" id="width" step="0.1" placeholder="optional" />
-      </div>
-      <div class="field">
-        <label for="depth">Average depth (m)</label>
-        <input type="number" id="depth" step="0.1" placeholder="optional" />
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="turnovers">Turnovers per day</label>
-        <input type="number" id="turnovers" step="0.1" value="3" />
-        <div class="inline-note">Typical design: 2–4 turnovers/day for commercial pools.</div>
-      </div>
-      <div class="field">
-        <label for="water-temp">Water temperature (°C)</label>
-        <input type="number" id="water-temp" step="0.5" value="30" />
-        <div class="inline-note">Typical UAE outdoor pool: 28–32 °C.</div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <h2>Chlorine design basis – HTH granular</h2>
-    <p class="section-subtitle">
-      Continuous chlorination and shock dosing with calcium hypochlorite granules.
-      HTH guidance: “1 kg for 100 m³ of water per day” for commercial pools.
-    </p>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="cl-target">Target free chlorine (ppm)</label>
-        <input type="number" id="cl-target" step="0.1" value="2" />
-      </div>
-      <div class="field">
-        <label for="cl-current">Current free chlorine (ppm)</label>
-        <input type="number" id="cl-current" step="0.1" value="0" />
-        <div class="inline-note">Used for one‑time boost (shock) to reach target.</div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="cl-strength">Available chlorine of HTH granular (%)</label>
-        <input type="number" id="cl-strength" step="0.1" value="68" />
-        <div class="inline-note">
-          From data sheet: average 68%, minimum 65% available chlorine.
+  <div class="app-shell">
+    <header>
+      <div class="brand-block">
+        <div class="brand-title">HYDRODOSE POOL CHEM DASHBOARD</div>
+        <div class="brand-sub">
+          REPORT TITLE: SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS
         </div>
       </div>
-      <div class="field">
-        <label for="cl-ref-dose">Reference HTH dose (kg/100 m³/day)</label>
-        <input type="number" id="cl-ref-dose" step="0.01" value="1.0" />
-        <div class="inline-note">
-          HTH recommendation for commercial pools: 1 kg / 100 m³ / day.
+      <div class="repo-tag">
+        Repo: <span>it8jit-arch-hydrodose-pool-chem</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- INPUT CARD -->
+      <section class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <div class="card-title">INPUT PARAMETERS</div>
+            <div class="card-pill">Dark engineering dashboard · UAE</div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Project Name</label>
+              <input id="projectName" placeholder="e.g. Residential Pool – Sharjah" />
+            </div>
+            <div class="field">
+              <label>Project Ref</label>
+              <input id="projectRef" placeholder="e.g. P-24-POOL-017" />
+            </div>
+
+            <div class="field">
+              <label>Pool Area (m²)</label>
+              <input id="poolArea" type="number" min="0" step="0.01" placeholder="Ask if only area is known" />
+              <small>Used with average depth if volume not provided.</small>
+            </div>
+            <div class="field">
+              <label>Average Depth (m)</label>
+              <input id="poolDepth" type="number" min="0" step="0.01" placeholder="Optional if volume known" />
+            </div>
+
+            <div class="field">
+              <label>Pool Volume (m³)</label>
+              <input id="poolVolume" type="number" min="0" step="0.01" placeholder="Or enter directly if known" />
+              <small>1 m³ ≈ 1,000 L.</small>
+            </div>
+            <div class="field">
+              <label>Turnover / Day</label>
+              <input id="turnovers" type="number" min="0.5" step="0.5" value="1" />
+              <small>Typical: 1–2 turnovers per day.</small>
+            </div>
+
+            <div class="field">
+              <label>Target Free Chlorine (ppm)</label>
+              <input id="targetCl" type="number" min="0" step="0.1" value="2.0" />
+              <small>Typical UAE outdoor: 2–4 ppm.</small>
+            </div>
+            <div class="field">
+              <label>Daily Chlorine Loss (ppm)</label>
+              <input id="lossCl" type="number" min="0" step="0.1" value="1.5" />
+              <small>Evaporation, bather load, solar UV.</small>
+            </div>
+
+            <div class="field">
+              <label>Target pH</label>
+              <input id="targetPh" type="number" min="6.8" max="8.0" step="0.1" value="7.4" />
+            </div>
+            <div class="field">
+              <label>Daily pH Correction (ΔpH)</label>
+              <input id="deltaPh" type="number" min="0" step="0.05" value="0.2" />
+              <small>Estimated daily upward drift to be corrected.</small>
+            </div>
+
+            <div class="field">
+              <label>Chlorine Product Strength (%)</label>
+              <input id="clStrength" type="number" min="1" max="80" step="1" value="70" />
+              <small>Calcium hypochlorite (HTH / Aquachlor / HI-CHLON).</small>
+            </div>
+            <div class="field">
+              <label>Sodium Bisulphate Purity (%)</label>
+              <input id="acidStrength" type="number" min="70" max="100" step="1" value="92" />
+              <small>Pool acid (NaHSO₄) as per MSDS.</small>
+            </div>
+
+            <div class="field">
+              <label>Climate Profile</label>
+              <select id="climateProfile">
+                <option value="uae-high">UAE Outdoor – High Solar Load</option>
+                <option value="uae-indoor">UAE Indoor – Moderate Load</option>
+                <option value="custom">Custom (Use entered loss)</option>
+              </select>
+              <small>Adjusts chlorine demand factor.</small>
+            </div>
+
+            <div class="field">
+              <label>Option 3</label>
+              <select id="brandSelect">
+                <option value="A" selected>Brand A – Aquachlor 70% (UAE)</option>
+                <option value="B">Brand B – HTH Dry Chlorine Granular</option>
+                <option value="C">Brand C – HI-CHLON 65G</option>
+              </select>
+              <small>Chlorine brand selection: A/B/C.</small>
+            </div>
+          </div>
+
+          <div class="inline-row">
+            <div class="badge badge-uae">UAE CLIMATE &amp; SOLAR CONDITIONS APPLIED</div>
+            <div class="badge">POOL AREA &amp; VOLUME ASKED SEPARATELY</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" onclick="calculateReport()">
+              ▶ Generate Technical Report
+            </button>
+            <button class="btn-ghost" onclick="exportPdf()">
+              ⬇ Export as PDF (Print)
+            </button>
+            <button class="btn-ghost" onclick="exportWord()">
+              ⬇ Export as Word
+            </button>
+            <button class="btn-danger" onclick="resetForm()">
+              ✕ Reset
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="divider"></div>
+      <!-- REPORT CARD -->
+      <section class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <div class="card-title">STANDARDISED TECHNICAL REPORT</div>
+            <div class="card-pill">All caps headings · Exact output structure</div>
+          </div>
 
-    <h2>Climate &amp; safety factors – UAE</h2>
-    <p class="section-subtitle">
-      UAE climate: high solar irradiance, high ambient temperature, and high chlorine decay. A default factor is applied.
-    </p>
-
-    <div class="field">
-      <label>Sun exposure / UV factor (UAE)</label>
-      <div class="pill-row" id="sun-pills">
-        <div class="pill" data-factor="1.0">Indoor / shaded (1.0×)</div>
-        <div class="pill" data-factor="1.3">Outdoor, moderate (1.3×)</div>
-        <div class="pill active" data-factor="1.6">UAE typical outdoor (1.6×)</div>
-        <div class="pill" data-factor="1.9">Extreme sun / rooftop (1.9×)</div>
-      </div>
-      <div class="inline-note">
-        This multiplies the daily chlorine demand to account for UV/thermal degradation typical of UAE conditions.
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="safety-factor">Operational safety factor</label>
-      <input type="number" id="safety-factor" step="0.05" value="1.2" />
-      <div class="inline-note">
-        Covers bather load, organics, and design margin (typical 1.1–1.3).
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <h2>pH control – sodium bisulfate</h2>
-    <p class="section-subtitle">
-      Sodium bisulfate (NaHSO₄) is used as a dry acid to reduce pH. Enter your measured acid demand.
-    </p>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="ph-current">Current pH</label>
-        <input type="number" id="ph-current" step="0.01" value="7.8" />
-      </div>
-      <div class="field">
-        <label for="ph-target">Target pH</label>
-        <input type="number" id="ph-target" step="0.01" value="7.4" />
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="field">
-        <label for="ph-demand">Acid demand (mg/L as H⁺)</label>
-        <input type="number" id="ph-demand" step="0.1" value="20" />
-        <div class="inline-note">
-          From titration/test kit: mg/L acid equivalent to move from current to target pH.
+          <div id="reportContainer" class="report-shell">
+            <!-- Filled by JS -->
+          </div>
         </div>
-      </div>
-      <div class="field">
-        <label for="bisulfate-strength">Sodium bisulfate product strength (%)</label>
-        <input type="number" id="bisulfate-strength" step="0.1" value="93" />
-        <div class="inline-note">
-          Typical commercial NaHSO₄ is ~90–95% active.
+      </section>
+    </div>
+  </div>
+
+  <script>
+    function formatNumber(value, decimals) {
+      if (!isFinite(value)) return "-";
+      return Number(value).toFixed(decimals);
+    }
+
+    function getBrandLabel(code) {
+      if (code === "A") return "Brand A – Aquachlor 70% Calcium Hypochlorite";
+      if (code === "B") return "Brand B – HTH Dry Chlorine Granular (60–80% Calcium Hypochlorite)";
+      if (code === "C") return "Brand C – HI-CHLON 65G Calcium Hypochlorite";
+      return "Custom Brand – Calcium Hypochlorite";
+    }
+
+    function getClimateFactor(profile, baseLoss) {
+      // Simple factors for UAE climate & solar properties
+      if (profile === "uae-high") return baseLoss * 1.3;
+      if (profile === "uae-indoor") return baseLoss * 0.8;
+      return baseLoss;
+    }
+
+    function calculateReport() {
+      const projectName = document.getElementById("projectName").value.trim() || "UNSPECIFIED PROJECT";
+      const projectRef = document.getElementById("projectRef").value.trim() || "N/A";
+
+      const area = parseFloat(document.getElementById("poolArea").value) || 0;
+      const depth = parseFloat(document.getElementById("poolDepth").value) || 0;
+      let volume = parseFloat(document.getElementById("poolVolume").value) || 0;
+
+      if (!volume && area > 0 && depth > 0) {
+        volume = area * depth;
+      }
+
+      const turnovers = parseFloat(document.getElementById("turnovers").value) || 1;
+      const targetCl = parseFloat(document.getElementById("targetCl").value) || 0;
+      const lossClInput = parseFloat(document.getElementById("lossCl").value) || 0;
+      const targetPh = parseFloat(document.getElementById("targetPh").value) || 7.4;
+      const deltaPh = parseFloat(document.getElementById("deltaPh").value) || 0;
+      const clStrength = parseFloat(document.getElementById("clStrength").value) || 70;
+      const acidStrength = parseFloat(document.getElementById("acidStrength").value) || 92;
+      const climateProfile = document.getElementById("climateProfile").value;
+      const brandCode = document.getElementById("brandSelect").value;
+
+      if (!volume || volume <= 0) {
+        alert("Please provide either pool volume (m³) or both pool area and average depth.");
+        return;
+      }
+
+      // Adjust chlorine loss for UAE climate
+      const adjustedLossPpm = getClimateFactor(climateProfile, lossClInput);
+      const dailyClPpm = adjustedLossPpm;
+      const weeklyClPpm = dailyClPpm * 7;
+      const monthlyClPpm = dailyClPpm * 30;
+
+      // Mass of chlorine required (g) = ppm * volume(m³) * 1,000 L/m³ / 1,000
+      // => ppm * volume (since 1 ppm = 1 mg/L)
+      const dailyClMass_g = dailyClPpm * volume;
+      const weeklyClMass_g = weeklyClPpm * volume;
+      const monthlyClMass_g = monthlyClPpm * volume;
+
+      // Convert to product mass based on active chlorine percentage
+      const clFraction = clStrength / 100;
+      const dailyProduct_g = dailyClMass_g / clFraction;
+      const weeklyProduct_g = weeklyClMass_g / clFraction;
+      const monthlyProduct_g = monthlyClMass_g / clFraction;
+
+      // pH correction – simplified proportional model
+      // Assume 0.1 pH reduction per 10 g NaHSO4 per m³ (example engineering assumption)
+      const acidEffectPer10gPerM3 = 0.1;
+      const requiredAcid_g_per_m3 =
+        deltaPh > 0 ? (deltaPh / acidEffectPer10gPerM3) * 10 : 0;
+      const dailyAcid_g = requiredAcid_g_per_m3 * volume;
+      const weeklyAcid_g = dailyAcid_g * 7;
+      const monthlyAcid_g = dailyAcid_g * 30;
+
+      const acidFraction = acidStrength / 100;
+      const dailyAcidProduct_g = dailyAcid_g / acidFraction;
+      const weeklyAcidProduct_g = weeklyAcid_g / acidFraction;
+      const monthlyAcidProduct_g = monthlyAcid_g / acidFraction;
+
+      const brandLabel = getBrandLabel(brandCode);
+
+      const report = `
+        <div class="report-header">
+          <div class="report-title-block">
+            <div class="report-title">SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</div>
+            <div class="report-meta">
+              PROJECT NAME: <span>${projectName}</span><br />
+              PROJECT REF: <span>${projectRef}</span>
+            </div>
+          </div>
+          <div class="report-title-block">
+            <div class="report-meta">
+              REPORT MODE: <span>STANDARDISED TECHNICAL REPORT</span><br />
+              CLIMATE: <span>GENERAL UAE CLIMATE &amp; SOLAR PROPERTIES</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="field">
-      <label for="bisulfate-density">Sodium bisulfate bulk density (kg/L)</label>
-      <input type="number" id="bisulfate-density" step="0.01" value="1.30" />
-      <div class="inline-note">
-        Used to convert mass to volume for handling (approximate).
-      </div>
-    </div>
+        <div class="report-section">
+          <div class="report-section-title">POOL DATA</div>
+          <table class="report-table">
+            <tr>
+              <th>PARAMETER</th>
+              <th>VALUE</th>
+            </tr>
+            <tr>
+              <td><strong>POOL AREA (M²)</strong></td>
+              <td>${area > 0 ? formatNumber(area, 2) : "BASED ON VOLUME ONLY"}</td>
+            </tr>
+            <tr>
+              <td><strong>AVERAGE DEPTH (M)</strong></td>
+              <td>${depth > 0 ? formatNumber(depth, 2) : "NOT ENTERED"}</td>
+            </tr>
+            <tr>
+              <td><strong>POOL VOLUME (M³)</strong></td>
+              <td>${formatNumber(volume, 2)}</td>
+            </tr>
+            <tr>
+              <td><strong>TURNOVER / DAY</strong></td>
+              <td>${formatNumber(turnovers, 2)}</td>
+            </tr>
+          </table>
+          <div class="pill-row">
+            <div class="pill pill-brand">${brandLabel}</div>
+            <div class="pill pill-chem">CALCIUM HYPOCHLORITE – HTH / AQUACHLOR / HI-CHLON</div>
+            <div class="pill pill-acid">SODIUM BISULPHATE – POOL ACID (NaHSO₄)</div>
+          </div>
+          <div class="tag-msds">
+            MSDS REFERENCES: <span>Aquachlor (UAE)</span>, <span>HTH DRY CHLORINE GRANULAR</span>,
+            <span>HI-CHLON 65G</span>, <span>SODIUM BISULPHATE (POOL ACID)</span>.
+          </div>
+        </div>
 
-    <div class="btn-row">
-      <button id="calc-btn">Calculate &amp; build report</button>
-      <button class="secondary" id="reset-btn">Reset inputs</button>
-    </div>
+        <div class="report-section">
+          <div class="report-section-title">CHLORINE SETPOINT &amp; CLIMATE ADJUSTMENT</div>
+          <table class="report-table">
+            <tr>
+              <th>PARAMETER</th>
+              <th>VALUE</th>
+            </tr>
+            <tr>
+              <td><strong>TARGET FREE CHLORINE (PPM)</strong></td>
+              <td>${formatNumber(targetCl, 2)}</td>
+            </tr>
+            <tr>
+              <td><strong>BASE DAILY CHLORINE LOSS (PPM)</strong></td>
+              <td>${formatNumber(lossClInput, 2)}</td>
+            </tr>
+            <tr>
+              <td><strong>ADJUSTED DAILY CHLORINE LOSS (PPM)</strong></td>
+              <td>${formatNumber(adjustedLossPpm, 2)} (UAE CLIMATE FACTOR)</td>
+            </tr>
+            <tr>
+              <td><strong>CHLORINE PRODUCT STRENGTH (%)</strong></td>
+              <td>${formatNumber(clStrength, 1)} % AS CALCIUM HYPOCHLORITE</td>
+            </tr>
+          </table>
+        </div>
 
-    <div class="warning">
-      <strong>Important:</strong> This tool is for engineering estimation and design sizing only. Always confirm with
-      on‑site water testing, local regulations, and manufacturer data before dosing chemicals.
-    </div>
-  </section>
+        <div class="report-section">
+          <div class="report-section-title">DAILY CHLORINE REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">DAILY CHLORINE REQUIREMENT (PPM)</div>
+              <div class="metric-value">${formatNumber(dailyClPpm, 2)}</div>
+              <div class="metric-unit">PPM FREE CHLORINE</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">DAILY CHLORINE REQUIREMENT (PURE CL)</div>
+              <div class="metric-value">${formatNumber(dailyClMass_g, 1)}</div>
+              <div class="metric-unit">g ACTIVE CHLORINE / DAY</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">DAILY HTH REQUIREMENT</div>
+              <div class="metric-value">${formatNumber(dailyProduct_g, 1)}</div>
+              <div class="metric-unit">g CALCIUM HYPOCHLORITE PRODUCT / DAY</div>
+            </div>
+          </div>
+        </div>
 
-  <!-- RESULTS & REPORT -->
-  <section class="card">
-    <h2>Results &amp; technical report</h2>
-    <p class="section-subtitle">
-      Chlorine and pH demand per pool and per m³, plus a structured report you can export as PDF or Word.
-    </p>
+        <div class="report-section">
+          <div class="report-section-title">WEEKLY CHLORINE REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY CHLORINE REQUIREMENT (PPM)</div>
+              <div class="metric-value">${formatNumber(weeklyClPpm, 2)}</div>
+              <div class="metric-unit">PPM FREE CHLORINE (CUMULATIVE)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY CHLORINE REQUIREMENT (PURE CL)</div>
+              <div class="metric-value">${formatNumber(weeklyClMass_g, 1)}</div>
+              <div class="metric-unit">g ACTIVE CHLORINE / WEEK</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY HTH REQUIREMENT</div>
+              <div class="metric-value">${formatNumber(weeklyProduct_g, 1)}</div>
+              <div class="metric-unit">g CALCIUM HYPOCHLORITE PRODUCT / WEEK</div>
+            </div>
+          </div>
+        </div>
 
-    <div class="results-group" id="cl-results" style="display:none;">
-      <div class="results-title">Chlorine demand – calcium hypochlorite (HTH granular)</div>
-      <div class="result-row">
-        <div class="result-label">Effective pool volume</div>
-        <div class="result-value" id="res-volume"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Surface area</div>
-        <div class="result-value" id="res-area"></div>
-      </div>
+        <div class="report-section">
+          <div class="report-section-title">MONTHLY CHLORINE REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">MONTHLY CHLORINE REQUIREMENT (PPM)</div>
+              <div class="metric-value">${formatNumber(monthlyClPpm, 2)}</div>
+              <div class="metric-unit">PPM FREE CHLORINE (CUMULATIVE)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MONTHLY CHLORINE REQUIREMENT (PURE CL)</div>
+              <div class="metric-value">${formatNumber(monthlyClMass_g, 1)}</div>
+              <div class="metric-unit">g ACTIVE CHLORINE / MONTH</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MONTHLY HTH REQUIREMENT</div>
+              <div class="metric-value">${formatNumber(monthlyProduct_g, 1)}</div>
+              <div class="metric-unit">g CALCIUM HYPOCHLORITE PRODUCT / MONTH</div>
+            </div>
+          </div>
+        </div>
 
-      <div class="divider"></div>
+        <div class="report-section">
+          <div class="report-section-title">PH SETPOINT &amp; ACID SELECTION</div>
+          <table class="report-table">
+            <tr>
+              <th>PARAMETER</th>
+              <th>VALUE</th>
+            </tr>
+            <tr>
+              <td><strong>TARGET PH</strong></td>
+              <td>${formatNumber(targetPh, 2)}</td>
+            </tr>
+            <tr>
+              <td><strong>DAILY PH CORRECTION (ΔPH)</strong></td>
+              <td>${formatNumber(deltaPh, 2)}</td>
+            </tr>
+            <tr>
+              <td><strong>SODIUM BISULPHATE PURITY (%)</strong></td>
+              <td>${formatNumber(acidStrength, 1)} % (POOL ACID NaHSO₄)</td>
+            </tr>
+          </table>
+          <div class="note-text">
+            NOTE: SODIUM BISULPHATE (POOL ACID) DATA SHEET INDICATES &gt; 92% NaHSO₄ CONTENT AND
+            FORMATION OF SULPHURIC ACID IN WATER. HANDLING AND DOSING SHALL FOLLOW MSDS
+            RECOMMENDATIONS (IRRITANT, CORROSIVE IN SOLUTION, EYE AND SKIN PROTECTION REQUIRED).
+          </div>
+        </div>
 
-      <div class="result-row">
-        <div class="result-label">Daily pure chlorine demand (kg/day)</div>
-        <div class="result-value" id="res-cl-day-pure"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Daily HTH granular mass (kg/day)</div>
-        <div class="result-value" id="res-cl-day-product-mass"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Per m³ per day (pure chlorine, kg/m³/day)</div>
-        <div class="result-value" id="res-cl-day-perm3"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Weekly HTH granular (kg/week)</div>
-        <div class="result-value" id="res-cl-week-mass"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Monthly HTH granular (kg/30 days)</div>
-        <div class="result-value" id="res-cl-month-mass"></div>
-      </div>
+        <div class="report-section">
+          <div class="report-section-title">DAILY PH REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">DAILY PH REQUIREMENT (ΔPH)</div>
+              <div class="metric-value">${formatNumber(deltaPh, 2)}</div>
+              <div class="metric-unit">PH UNITS TO BE REDUCED</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">DAILY SODIUM BISULPHATE REQUIREMENT (THEORETICAL)</div>
+              <div class="metric-value">${formatNumber(dailyAcid_g, 1)}</div>
+              <div class="metric-unit">g PURE NaHSO₄ / DAY</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">DAILY SODIUM BISULPHATE PRODUCT REQUIREMENT</div>
+              <div class="metric-value">${formatNumber(dailyAcidProduct_g, 1)}</div>
+              <div class="metric-unit">g COMMERCIAL PRODUCT / DAY</div>
+            </div>
+          </div>
+        </div>
 
-      <div class="divider"></div>
+        <div class="report-section">
+          <div class="report-section-title">WEEKLY PH REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY PH REQUIREMENT (CUMULATIVE)</div>
+              <div class="metric-value">${formatNumber(deltaPh * 7, 2)}</div>
+              <div class="metric-unit">PH UNITS (EQUIVALENT EFFECT)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY SODIUM BISULPHATE REQUIREMENT (THEORETICAL)</div>
+              <div class="metric-value">${formatNumber(weeklyAcid_g, 1)}</div>
+              <div class="metric-unit">g PURE NaHSO₄ / WEEK</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">WEEKLY SODIUM BISULPHATE PRODUCT REQUIREMENT</div>
+              <div class="metric-value">${formatNumber(weeklyAcidProduct_g, 1)}</div>
+              <div class="metric-unit">g COMMERCIAL PRODUCT / WEEK</div>
+            </div>
+          </div>
+        </div>
 
-      <div class="results-title">One‑time boost (shock) to reach target</div>
-      <div class="result-row">
-        <div class="result-label">ΔCl (target − current, ppm)</div>
-        <div class="result-value" id="res-cl-delta"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Pure chlorine mass for boost (kg)</div>
-        <div class="result-value" id="res-cl-boost-pure"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">HTH granular mass for boost (kg)</div>
-        <div class="result-value" id="res-cl-boost-mass"></div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="results-group" id="ph-results" style="display:none;">
-      <div class="results-title">pH reduction – sodium bisulfate</div>
-      <div class="result-row">
-        <div class="result-label">Single correction NaHSO₄ mass (kg)</div>
-        <div class="result-value" id="res-ph-once-mass"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Single correction NaHSO₄ volume (L)</div>
-        <div class="result-value" id="res-ph-once-vol"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Indicative daily NaHSO₄ (kg/day)</div>
-        <div class="result-value" id="res-ph-day-mass"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Weekly NaHSO₄ (kg/week)</div>
-        <div class="result-value" id="res-ph-week-mass"></div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Monthly NaHSO₄ (kg/30 days)</div>
-        <div class="result-value" id="res-ph-month-mass"></div>
-      </div>
-    </div>
-
-    <div id="no-results" class="small">
-      Enter your pool data and click <span class="highlight">Calculate &amp; build report</span> to see results and a
-      detailed engineering report.
-    </div>
-
-    <div class="divider"></div>
-
-    <h2>Report preview &amp; export</h2>
-    <p class="section-subtitle">
-      The report is text‑based, structured, and includes all required details. Exports include only the report content.
-    </p>
-
-    <div class="field">
-      <label for="report-box">Report preview</label>
-      <textarea id="report-box" readonly></textarea>
-    </div>
-
-    <div class="btn-row">
-      <button class="secondary" id="download-pdf-btn">Download report (PDF)</button>
-      <button class="secondary" id="download-docx-btn">Download report (Word)</button>
-    </div>
-
-    <div class="warning">
-      <strong>Safety &amp; SDS:</strong> Refer to the HTH Granular and sodium bisulfate Safety Data Sheets for full
-      handling, PPE, storage, and incompatibility information (e.g. oxidizing solid, harmful if swallowed, causes severe
-      skin burns and eye damage, very toxic to aquatic life).
-    </div>
-  </section>
-</main>
-
-<!-- Hidden container for PDF rendering -->
-<div id="report-print"></div>
-
-<!-- Libraries for PDF and DOCX export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
-
-<script>
-(function() {
-  const $ = id => document.getElementById(id);
-
-  const sunPills = document.getElementById('sun-pills');
-  let sunFactor = 1.6; // UAE default
-
-  sunPills.addEventListener('click', e => {
-    const pill = e.target.closest('.pill');
-    if (!pill) return;
-    [...sunPills.children].forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    sunFactor = parseFloat(pill.dataset.factor || '1');
-  });
-
-  $('reset-btn').addEventListener('click', () => {
-    $('project-name').value = '';
-    $('project-ref').value = '';
-    $('volume').value = '';
-    $('area').value = '';
-    $('length').value = '';
-    $('width').value = '';
-    $('depth').value = '';
-    $('turnovers').value = 3;
-    $('water-temp').value = 30;
-    $('cl-target').value = 2;
-    $('cl-current').value = 0;
-    $('cl-strength').value = 68;
-    $('cl-ref-dose').value = 1.0;
-    $('safety-factor').value = 1.2;
-    $('ph-current').value = 7.8;
-    $('ph-target').value = 7.4;
-    $('ph-demand').value = 20;
-    $('bisulfate-strength').value = 93;
-    $('bisulfate-density').value = 1.30;
-    $('report-box').value = '';
-    sunFactor = 1.6;
-    [...sunPills.children].forEach((p, i) => p.classList.toggle('active', p.dataset.factor === '1.6'));
-    $('cl-results').style.display = 'none';
-    $('ph-results').style.display = 'none';
-    $('no-results').style.display = 'block';
-  });
-
-  function buildReport(data) {
-    const lines = [];
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10);
-    const timeStr = now.toTimeString().slice(0, 8);
-
-    lines.push('SWIMMING POOL/WATER FEATURE CHLORINE & PH CALCULATIONS');
-    lines.push('AquaChem-UAE | Pool Chemical Engineering Calculator');
-    lines.push('');
-    lines.push('Report date: ' + dateStr + ' ' + timeStr);
-    lines.push('Project name: ' + (data.projectName || 'N/A'));
-    lines.push('Project ref : ' + (data.projectRef || 'N/A'));
-    lines.push('');
-    lines.push('1. INPUT DATA');
-    lines.push('  1.1 Pool geometry & hydraulics');
-    lines.push('    - Pool volume: ' + data.V.toFixed(1) + ' m³');
-    if (!isNaN(data.area) && data.area > 0) {
-      lines.push('    - Surface area: ' + data.area.toFixed(1) + ' m²');
-    } else {
-      lines.push('    - Surface area: N/A (not provided or not derivable)');
-    }
-    if (!isNaN(data.L) && !isNaN(data.W) && !isNaN(data.D)) {
-      lines.push('    - Length × width × avg depth: ' +
-        data.L.toFixed(2) + ' m × ' +
-        data.W.toFixed(2) + ' m × ' +
-        data.D.toFixed(2) + ' m');
-    }
-    lines.push('    - Turnovers per day: ' + data.turnovers.toFixed(2));
-    lines.push('    - Water temperature: ' + data.waterTemp.toFixed(1) + ' °C');
-    lines.push('');
-    lines.push('  1.2 Chlorine design basis (HTH granular calcium hypochlorite)');
-    lines.push('    - Target free chlorine: ' + data.clTarget.toFixed(2) + ' ppm');
-    lines.push('    - Current free chlorine: ' + data.clCurrent.toFixed(2) + ' ppm');
-    lines.push('    - HTH granular available chlorine: ' + data.clStrengthPct.toFixed(1) + ' %');
-    lines.push('    - HTH reference dose: ' + data.clRefDose.toFixed(2) + ' kg / 100 m³ / day');
-    lines.push('');
-    lines.push('  1.3 Climate & safety factors (UAE)');
-    lines.push('    - UV / solar factor: ' + data.sunFactor.toFixed(2));
-    lines.push('    - Operational safety factor: ' + data.safetyFactor.toFixed(2));
-    lines.push('');
-    lines.push('  1.4 pH control (sodium bisulfate)');
-    lines.push('    - pH current: ' + data.phCurrent.toFixed(2));
-    lines.push('    - pH target: ' + data.phTarget.toFixed(2));
-    lines.push('    - Acid demand: ' + data.phDemand.toFixed(1) + ' mg/L as H⁺');
-    lines.push('    - Sodium bisulfate strength: ' + data.bisulfateStrengthPct.toFixed(1) + ' %');
-    lines.push('    - Sodium bisulfate bulk density: ' + data.bisulfateDensity.toFixed(2) + ' kg/L');
-    lines.push('');
-    lines.push('2. CHLORINE DEMAND – CALCIUM HYPOCHLORITE (HTH GRANULAR)');
-    lines.push('');
-    lines.push('  2.1 Formula basis');
-    lines.push('    Pure Cl₂ mass per day (kg/day) ≈');
-    lines.push('      V(m³) × target ppm × turnovers / 1000 × UV factor × safety factor');
-    lines.push('    HTH granular mass (kg/day) = pure Cl₂ mass / (available chlorine fraction).');
-    lines.push('');
-    lines.push('  2.2 Results');
-    lines.push('    - Daily pure chlorine demand: ' + data.clPureDay.toFixed(3) + ' kg/day');
-    lines.push('    - Daily HTH granular demand: ' + data.clProductMassDay.toFixed(3) + ' kg/day');
-    lines.push('    - Per m³ per day (pure chlorine): ' + data.clPerM3Day.toFixed(4) + ' kg/m³/day');
-    lines.push('    - Weekly HTH granular demand: ' + data.clProductMassWeek.toFixed(3) + ' kg/week');
-    lines.push('    - Monthly HTH granular demand (30 days): ' + data.clProductMassMonth.toFixed(3) + ' kg/30 days');
-    lines.push('');
-    lines.push('  2.3 One‑time boost (shock) to reach target');
-    lines.push('    - ΔCl (target − current): ' + data.deltaCl.toFixed(2) + ' ppm');
-    lines.push('    - Pure chlorine mass for boost: ' + data.clBoostPure.toFixed(3) + ' kg');
-    lines.push('    - HTH granular mass for boost: ' + data.clBoostProductMass.toFixed(3) + ' kg');
-    lines.push('');
-    lines.push('3. pH REDUCTION – SODIUM BISULFATE (NaHSO₄)');
-    lines.push('');
-    lines.push('  3.1 Formula basis');
-    lines.push('    Acid mass for one correction (kg) ≈');
-    lines.push('      V(m³) × acid demand(mg/L) / 1000');
-    lines.push('    NaHSO₄ mass (kg) = acid mass / (NaHSO₄ strength fraction).');
-    lines.push('');
-    lines.push('  3.2 Results');
-    lines.push('    - Single correction NaHSO₄ mass: ' + data.phOnceProductMass.toFixed(3) + ' kg');
-    lines.push('    - Single correction NaHSO₄ volume (approx.): ' + data.phOnceProductVol.toFixed(3) + ' L');
-    lines.push('    - Indicative daily NaHSO₄: ' + data.phDayMass.toFixed(3) + ' kg/day');
-    lines.push('    - Weekly NaHSO₄: ' + data.phWeekMass.toFixed(3) + ' kg/week');
-    lines.push('    - Monthly NaHSO₄ (30 days): ' + data.phMonthMass.toFixed(3) + ' kg/30 days');
-    lines.push('');
-    lines.push('4. CHEMICAL & CLIMATE NOTES');
-    lines.push('');
-    lines.push('  4.1 HTH granular calcium hypochlorite');
-    lines.push('    - Fast‑dissolving granules for disinfection and algicide treatment.');
-    lines.push('    - Average chlorine equivalent content ≈ 68 % on the date of manufacture (minimum 65 %).');
-    lines.push('    - Typical continuous chlorination guideline: 1 kg per 100 m³ of water per day for commercial pools.');
-    lines.push('');
-    lines.push('  4.2 UAE climate considerations');
-    lines.push('    - High solar irradiance and high ambient temperature accelerate chlorine decay.');
-    lines.push('    - UV/solar factor in this report scales chlorine demand to reflect these conditions.');
-    lines.push('    - For rooftop or fully exposed pools, higher factors may be justified based on monitoring.');
-    lines.push('');
-    lines.push('  4.3 Sodium bisulfate (NaHSO₄)');
-    lines.push('    - Used as a dry acid to reduce pH.');
-    lines.push('    - Actual neutralising capacity depends on alkalinity and water chemistry;');
-    lines.push('      field titration and manufacturer guidance should be used to fine‑tune dosing.');
-    lines.push('');
-    lines.push('5. SAFETY & LIMITATIONS');
-    lines.push('');
-    lines.push('  - This report is an engineering estimation tool and does not replace on‑site water testing.');
-    lines.push('  - Always comply with local regulations for free chlorine, combined chlorine, and pH ranges.');
-    lines.push('  - Refer to the Safety Data Sheets (SDS) for HTH granular and sodium bisulfate for:');
-    lines.push('      • Personal protective equipment (PPE)');
-    lines.push('      • Storage temperature limits (e.g. ≤ 35 °C, dry, well‑ventilated, away from acids and combustibles)');
-    lines.push('      • Incompatibilities and emergency measures');
-    lines.push('  - Typical SDS statements include:');
-    lines.push('      • “May intensify fire; oxidizer.”');
-    lines.push('      • “Harmful if swallowed.”');
-    lines.push('      • “Causes severe skin burns and eye damage.”');
-    lines.push('      • “Very toxic to aquatic life.”');
-    lines.push('');
-    lines.push('END OF REPORT');
-
-    return lines.join('\n');
-  }
-
-  $('calc-btn').addEventListener('click', () => {
-    // Geometry and volume/area
-    let V = parseFloat($('volume').value);
-    let A = parseFloat($('area').value);
-    const L = parseFloat($('length').value);
-    const W = parseFloat($('width').value);
-    const D = parseFloat($('depth').value);
-
-    if ((isNaN(A) || A <= 0) && !isNaN(L) && !isNaN(W)) {
-      A = L * W;
-    }
-
-    if ((isNaN(V) || V <= 0) && !isNaN(L) && !isNaN(W) && !isNaN(D)) {
-      V = L * W * D;
-    }
-
-    if (isNaN(V) || V <= 0) {
-      alert('Please provide either pool volume or length, width, and average depth.');
-      return;
-    }
-
-    const turnovers = parseFloat($('turnovers').value) || 0;
-    const waterTemp = parseFloat($('water-temp').value) || 0;
-    const clTarget = parseFloat($('cl-target').value) || 0;
-    const clCurrent = parseFloat($('cl-current').value) || 0;
-    const clStrengthPct = parseFloat($('cl-strength').value) || 0;
-    const clRefDose = parseFloat($('cl-ref-dose').value) || 0;
-    const safetyFactor = parseFloat($('safety-factor').value) || 1.0;
-
-    const clStrengthFrac = clStrengthPct > 0 ? clStrengthPct / 100.0 : 0;
-
-    // Pure chlorine mass per day (kg/day)
-    let clPureDay = V * clTarget * turnovers / 1000.0;
-    clPureDay *= sunFactor * safetyFactor;
-
-    // HTH granular mass per day (kg/day)
-    let clProductMassDay = clStrengthFrac > 0 ? clPureDay / clStrengthFrac : NaN;
-
-    // Weekly and monthly
-    const clProductMassWeek = clProductMassDay * 7;
-    const clProductMassMonth = clProductMassDay * 30;
-
-    // Per m³ per day (pure chlorine)
-    const clPerM3Day = clPureDay / V;
-
-    // One-time boost (shock)
-    const deltaCl = Math.max(0, clTarget - clCurrent);
-    const clBoostPure = V * deltaCl / 1000.0; // kg pure Cl2
-    const clBoostProductMass = clStrengthFrac > 0 ? clBoostPure / clStrengthFrac : NaN;
-
-    // pH / sodium bisulfate calculations
-    const phCurrent = parseFloat($('ph-current').value) || 0;
-    const phTarget = parseFloat($('ph-target').value) || 0;
-    const phDemand = parseFloat($('ph-demand').value) || 0; // mg/L as H+
-    const bisulfateStrengthPct = parseFloat($('bisulfate-strength').value) || 0;
-    const bisulfateStrengthFrac = bisulfateStrengthPct > 0 ? bisulfateStrengthPct / 100.0 : 0;
-    const bisulfateDensity = parseFloat($('bisulfate-density').value) || 1.3;
-
-    // Acid mass for one correction (kg)
-    const phOnceAcidMass = V * phDemand / 1000.0;
-    const phOnceProductMass = bisulfateStrengthFrac > 0 ? phOnceAcidMass / bisulfateStrengthFrac : NaN;
-    const phOnceProductVol = bisulfateDensity > 0 ? phOnceProductMass / bisulfateDensity : NaN;
-
-    // Indicative ongoing pH control – assume similar demand once per day
-    const phDayMass = phOnceProductMass;
-    const phWeekMass = phDayMass * 7;
-    const phMonthMass = phDayMass * 30;
-
-    // Render results
-    $('cl-results').style.display = 'block';
-    $('ph-results').style.display = 'block';
-    $('no-results').style.display = 'none';
-
-    $('res-volume').textContent = V.toFixed(1) + ' m³';
-    $('res-area').textContent = (!isNaN(A) && A > 0) ? A.toFixed(1) + ' m²' : '—';
-
-    $('res-cl-day-pure').textContent = clPureDay.toFixed(3) + ' kg/day';
-    $('res-cl-day-product-mass').textContent = isNaN(clProductMassDay) ? '—' : clProductMassDay.toFixed(3) + ' kg/day';
-    $('res-cl-day-perm3').textContent = clPerM3Day.toFixed(4) + ' kg/m³/day';
-    $('res-cl-week-mass').textContent = isNaN(clProductMassWeek) ? '—' : clProductMassWeek.toFixed(3) + ' kg/week';
-    $('res-cl-month-mass').textContent = isNaN(clProductMassMonth) ? '—' : clProductMassMonth.toFixed(3) + ' kg/30 days';
-
-    $('res-cl-delta').textContent = deltaCl.toFixed(2) + ' ppm';
-    $('res-cl-boost-pure').textContent = clBoostPure.toFixed(3) + ' kg';
-    $('res-cl-boost-mass').textContent = isNaN(clBoostProductMass) ? '—' : clBoostProductMass.toFixed(3) + ' kg';
-
-    $('res-ph-once-mass').textContent = isNaN(phOnceProductMass) ? '—' : phOnceProductMass.toFixed(3) + ' kg';
-    $('res-ph-once-vol').textContent = isNaN(phOnceProductVol) ? '—' : phOnceProductVol.toFixed(3) + ' L';
-    $('res-ph-day-mass').textContent = isNaN(phDayMass) ? '—' : phDayMass.toFixed(3) + ' kg/day';
-    $('res-ph-week-mass').textContent = isNaN(phWeekMass) ? '—' : phWeekMass.toFixed(3) + ' kg/week';
-    $('res-ph-month-mass').textContent = isNaN(phMonthMass) ? '—' : phMonthMass.toFixed(3) + ' kg/30 days';
-
-    // Build report
-    const reportData = {
-      projectName: $('project-name').value || '',
-      projectRef: $('project-ref').value || '',
-      V,
-      area: (!isNaN(A) && A > 0) ? A : NaN,
-      L: isNaN(L) ? NaN : L,
-      W: isNaN(W) ? NaN : W,
-      D: isNaN(D) ? NaN : D,
-      turnovers,
-      waterTemp,
-      clTarget,
-      clCurrent,
-      clStrengthPct,
-      clRefDose,
-      sunFactor,
-      safetyFactor,
-      clPureDay,
-      clProductMassDay,
-      clProductMassWeek,
-      clProductMassMonth,
-      clPerM3Day,
-      deltaCl,
-      clBoostPure,
-      clBoostProductMass,
-      phCurrent,
-      phTarget,
-      phDemand,
-      bisulfateStrengthPct,
-      bisulfateDensity,
-      phOnceProductMass,
-      phOnceProductVol,
-      phDayMass,
-      phWeekMass,
-      phMonthMass
-    };
-
-    const reportText = buildReport(reportData);
-    $('report-box').value = reportText;
-  });
-
-  // PDF export (report only)
-  $('download-pdf-btn').addEventListener('click', () => {
-    const text = $('report-box').value;
-    if (!text.trim()) {
-      alert('No report generated yet. Please run the calculation first.');
-      return;
-    }
-    const container = $('report-print');
-    container.textContent = text;
-    container.style.display = 'block';
-
-    const opt = {
-      margin:       10,
-      filename:     'AquaChem-UAE_Report.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(container).save().then(() => {
-      container.style.display = 'none';
-    });
-  });
-
-  // DOCX export (report only)
-  $('download-docx-btn').addEventListener('click', async () => {
-    const text = $('report-box').value;
-    if (!text.trim()) {
-      alert('No report generated yet. Please run the calculation first.');
-      return;
-    }
-    const { Document, Packer, Paragraph } = window.docx;
-    const lines = text.split('\n');
-    const paragraphs = lines.map(line => new Paragraph({ text: line }));
-
-    const doc = new Document({
-      sections: [
-        {
-          properties: {},
-          children: paragraphs
-        }
-      ]
-    });
-
-    const blob = await Packer.toBlob(doc);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'AquaChem-UAE_Report.docx';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
-})();
-</script>
-</body>
-</html>
+        <div class="report-section">
+          <div class="report-section-title">MONTHLY PH REQUIREMENT</div>
+          <div class="report-grid">
+            <div class="metric-card">
+              <div class="metric-label">MONTHLY PH REQUIREMENT (CUMULATIVE)</div>
+              <div class="metric-value">${formatNumber(deltaPh * 30, 2)}</div>
+              <div class="metric-unit">PH UNITS (EQUIVALENT EFFECT)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MONTHLY SODIUM BISULPHATE REQUIREMENT (THEORETICAL)</div>
+              <div class="metric-value">${formatNumber(monthlyAcid_g, 1)}</div>
+              <div class="metric-unit">g PURE NaHSO₄ / MONTH</div>
+            </div>

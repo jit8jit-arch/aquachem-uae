@@ -552,9 +552,9 @@
             <div class="field">
               <label for="chlorineBrand">CHLORINE BRAND SELECTION</label>
               <select id="chlorineBrand">
-                <option value="A" selected>Option A – Aquachlor (70% Ca(ClO)₂)</option>
-                <option value="B">Option B – HTH® Dry Chlorine Granular (60–80% Ca(ClO)₂)</option>
-                <option value="C">Option C – HI-CHLON 65G (≥65% available chlorine)</option>
+                <option value="B" selected>HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)</option>
+                <option value="A">Aquachlor (Calcium Hypochlorite 70%)</option>
+                <option value="C">HI-CHLON 65G (≥65% available chlorine)</option>
               </select>
             </div>
             <div class="field">
@@ -616,12 +616,12 @@
             <div class="metric-pill">
               <div class="metric-label">DAILY CHLORINE (ACTIVE)</div>
               <div class="metric-value" id="metricDailyCl">–</div>
-              <div class="metric-tag">g/day</div>
+              <div class="metric-tag">g/day · kg/day</div>
             </div>
             <div class="metric-pill">
               <div class="metric-label">DAILY POOL ACID</div>
               <div class="metric-value" id="metricDailyAcid">–</div>
-              <div class="metric-tag">g/day NaHSO₄</div>
+              <div class="metric-tag">g/day · kg/day NaHSO₄</div>
             </div>
           </div>
 
@@ -637,15 +637,15 @@
   <script>
     const CHLORINE_BRANDS = {
       A: {
-        name: "Aquachlor",
+        name: "Aquachlor (Calcium Hypochlorite 70%)",
         availableChlorineFraction: 0.70
       },
       B: {
-        name: "HTH® Dry Chlorine Granular",
+        name: "HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)",
         availableChlorineFraction: 0.70
       },
       C: {
-        name: "HI-CHLON 65G",
+        name: "HI-CHLON 65G (≥65% available chlorine)",
         availableChlorineFraction: 0.65
       }
     };
@@ -676,6 +676,11 @@
       return Number(value).toFixed(decimals);
     }
 
+    function gramsToKg(value) {
+      if (value === null || value === undefined || isNaN(value)) return "–";
+      return (Number(value) / 1000).toFixed(3);
+    }
+
     function getVolume() {
       const surfaceArea = parseFloat(document.getElementById("surfaceArea").value);
       const avgDepth = parseFloat(document.getElementById("avgDepth").value);
@@ -695,8 +700,8 @@
     }
 
     function getChlorineBrand() {
-      const val = document.getElementById("chlorineBrand").value || "A";
-      return CHLORINE_BRANDS[val] || CHLORINE_BRANDS.A;
+      const val = document.getElementById("chlorineBrand").value || "B";
+      return CHLORINE_BRANDS[val] || CHLORINE_BRANDS.B;
     }
 
     function calculateDoses() {
@@ -741,8 +746,12 @@
       }
 
       document.getElementById("metricVolume").textContent = formatNumber(volumeM3, 2) + " m³";
-      document.getElementById("metricDailyCl").textContent = formatNumber(dailyActiveChlorine_g, 1) + " g";
-      document.getElementById("metricDailyAcid").textContent = deltaPh > 0 ? formatNumber(dailyAcid_g, 1) + " g" : "0.0 g";
+      const dailyClText = formatNumber(dailyActiveChlorine_g, 1) + " g (" + gramsToKg(dailyActiveChlorine_g) + " kg)";
+      document.getElementById("metricDailyCl").textContent = dailyClText;
+      const dailyAcidText = deltaPh > 0
+        ? formatNumber(dailyAcid_g, 1) + " g (" + gramsToKg(dailyAcid_g) + " kg)"
+        : "0.0 g (0.000 kg)";
+      document.getElementById("metricDailyAcid").textContent = dailyAcidText;
 
       setStatus("CALCULATION COMPLETE. CLICK “PREVIEW SUMMARY” TO VIEW DEMAND.", "ok");
 
@@ -794,21 +803,21 @@
       report.push(`<div class="summary-row">
         <div class="summary-card daily">
           <div class="summary-title">DAILY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.dailyActiveChlorine_g, 1)} g/day</div>
-          <div class="summary-line"><strong>Brand product:</strong> ${formatNumber(calc.dailyProductChlorine_g, 1)} g/day</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.dailyAcid_g, 1) + " g/day" : "0.0 g/day"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.dailyActiveChlorine_g, 1)} g/day (${gramsToKg(calc.dailyActiveChlorine_g)} kg/day)</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.dailyProductChlorine_g, 1)} g/day (${gramsToKg(calc.dailyProductChlorine_g)} kg/day)</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.dailyAcid_g, 1) + " g/day (" + gramsToKg(calc.dailyAcid_g) + " kg/day)" : "0.0 g/day (0.000 kg/day)"}</div>
         </div>
         <div class="summary-card weekly">
           <div class="summary-title">WEEKLY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.weeklyActiveChlorine_g, 1)} g/week</div>
-          <div class="summary-line"><strong>Brand product:</strong> ${formatNumber(calc.weeklyProductChlorine_g, 1)} g/week</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.weeklyAcid_g, 1) + " g/week" : "0.0 g/week"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.weeklyActiveChlorine_g, 1)} g/week (${gramsToKg(calc.weeklyActiveChlorine_g)} kg/week)</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.weeklyProductChlorine_g, 1)} g/week (${gramsToKg(calc.weeklyProductChlorine_g)} kg/week)</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.weeklyAcid_g, 1) + " g/week (" + gramsToKg(calc.weeklyAcid_g) + " kg/week)" : "0.0 g/week (0.000 kg/week)"}</div>
         </div>
         <div class="summary-card monthly">
           <div class="summary-title">MONTHLY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.monthlyActiveChlorine_g, 1)} g/month</div>
-          <div class="summary-line"><strong>Brand product:</strong> ${formatNumber(calc.monthlyProductChlorine_g, 1)} g/month</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.monthlyAcid_g, 1) + " g/month" : "0.0 g/month"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.monthlyActiveChlorine_g, 1)} g/month (${gramsToKg(calc.monthlyActiveChlorine_g)} kg/month)</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.monthlyProductChlorine_g, 1)} g/month (${gramsToKg(calc.monthlyProductChlorine_g)} kg/month)</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.monthlyAcid_g, 1) + " g/month (" + gramsToKg(calc.monthlyAcid_g) + " kg/month)" : "0.0 g/month (0.000 kg/month)"}</div>
         </div>
       </div>`);
 

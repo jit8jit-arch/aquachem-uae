@@ -1,1038 +1,445 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SWIMMING POOL/WATER FEATURE CHLORINE & PH CALCULATIONS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg: #05070b;
-      --accent: #38bdf8;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border-subtle: #1f2937;
-      --success: #4ade80;
-      --warning: #facc15;
-      --danger: #f97373;
-      --radius-lg: 14px;
-      --radius-pill: 999px;
-      --shadow-soft: 0 18px 45px rgba(0,0,0,0.65);
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-    }
+<meta charset="UTF-8" />
+<title>SWIMMING POOL/WATER FEATURE CHLORINE & PH CALCULATIONS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    * { box-sizing: border-box; }
+<style>
+/* -----------------------------------------------------------
+   GLOBAL THEME
+----------------------------------------------------------- */
+:root {
+  --bg: #05070b;
+  --accent: #38bdf8;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #1f2937;
+  --success: #4ade80;
+  --warning: #facc15;
+  --danger: #f87171;
+  --radius: 12px;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 60%, #000 100%);
-      color: var(--text);
-      font-family: var(--font-sans);
-      -webkit-font-smoothing: antialiased;
-    }
+body {
+  margin: 0;
+  padding: 0;
+  background: #020617;
+  color: var(--text);
+  font-family: var(--font);
+}
 
-    .app-shell {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 18px 16px 32px;
-    }
+/* -----------------------------------------------------------
+   LAYOUT
+----------------------------------------------------------- */
+.app {
+  max-width: 1250px;
+  margin: auto;
+  padding: 20px;
+}
 
-    header.app-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
 
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+}
 
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 20% 0, #38bdf8 0, #0f172a 40%, #020617 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 1px rgba(148,163,184,0.35), 0 12px 30px rgba(15,23,42,0.9);
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #e0f2fe;
-    }
+/* -----------------------------------------------------------
+   CARD
+----------------------------------------------------------- */
+.card {
+  background: #0b1120;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
 
-    .brand-text h1 {
-      margin: 0;
-      font-size: 16px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+.card-title {
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
 
-    .brand-text h2 {
-      margin: 2px 0 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #e5e7eb;
-    }
+/* -----------------------------------------------------------
+   INPUTS
+----------------------------------------------------------- */
+.field {
+  margin-bottom: 10px;
+}
 
-    .header-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+.field label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
-    .pill {
-      border-radius: var(--radius-pill);
-      padding: 6px 12px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border: 1px solid rgba(148,163,184,0.35);
-      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.18), rgba(15,23,42,0.9));
-      color: #e5e7eb;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+input, select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: var(--text);
+  margin-top: 4px;
+}
 
-    .pill span.dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(56,189,248,0.25);
-    }
+button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  color: #0b1120;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-right: 6px;
+}
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
-      gap: 18px;
-      align-items: flex-start;
-    }
+button.secondary {
+  background: #0f172a;
+  color: var(--muted);
+}
 
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: minmax(0, 1fr); }
-    }
+/* -----------------------------------------------------------
+   TABLE
+----------------------------------------------------------- */
+.table-card {
+  margin-top: 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: var(--radius);
+  padding: 14px;
+}
 
-    .card {
-      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), #020617 60%);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      padding: 16px 16px 18px;
-      position: relative;
-      overflow: hidden;
-    }
+.table-title {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
 
-    .card-inner { position: relative; z-index: 1; }
+.table-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
 
-    .card-title {
-      font-size: 13px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
+th, td {
+  padding: 8px;
+  text-align: left;
+}
 
-    .card-subtitle {
-      font-size: 11px;
-      color: var(--muted);
-    }
+thead tr {
+  background: #1e293b;
+}
 
-    .badge {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148,163,184,0.4);
-      background: rgba(15,23,42,0.9);
-      color: var(--muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+.row-daily {
+  background: rgba(56,189,248,0.12);
+}
 
-    .badge strong { color: var(--accent); font-weight: 500; }
+.row-weekly {
+  background: rgba(250,204,21,0.12);
+}
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
+.row-monthly {
+  background: rgba(248,113,113,0.12);
+}
 
-    @media (max-width: 640px) {
-      .grid-2 { grid-template-columns: minmax(0, 1fr); }
-    }
+/* -----------------------------------------------------------
+   STATUS
+----------------------------------------------------------- */
+.status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--success);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
 
-    .field label {
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .field small {
-      font-size: 10px;
-      color: #6b7280;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select {
-      background: rgba(15,23,42,0.95);
-      border-radius: 9px;
-      border: 1px solid rgba(55,65,81,0.9);
-      padding: 7px 9px;
-      font-size: 13px;
-      color: var(--text);
-      outline: none;
-      width: 100%;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(56,189,248,0.4);
-      background: #020617;
-    }
-
-    .radio-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .radio-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 9px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(55,65,81,0.9);
-      background: rgba(15,23,42,0.9);
-      font-size: 11px;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .radio-pill input { accent-color: var(--accent); }
-
-    .radio-pill.active {
-      border-color: var(--accent);
-      background: rgba(56,189,248,0.12);
-      color: #e5e7eb;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    button {
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148,163,184,0.4);
-      background: linear-gradient(135deg, #0ea5e9, #22c55e);
-      color: #0b1120;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 7px 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 12px 30px rgba(34,197,94,0.35);
-    }
-
-    button.secondary {
-      background: rgba(15,23,42,0.95);
-      color: var(--muted);
-      border-color: rgba(75,85,99,0.9);
-      box-shadow: none;
-    }
-
-    .status-bar {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .status-text {
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--success);
-      box-shadow: 0 0 0 4px rgba(74,222,128,0.25);
-    }
-
-    /* RIGHT: TABLE CARD ONLY */
-    .table-card {
-      border-radius: 10px;
-      border: 1px solid rgba(55,65,81,0.9);
-      background: rgba(15,23,42,0.98);
-      padding: 10px 10px 12px;
-      font-size: 12px;
-    }
-
-    .table-card-title {
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      color: #e5e7eb;
-    }
-
-    .table-meta {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .demand-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      color: #e5e7eb;
-    }
-
-    .demand-table th,
-    .demand-table td {
-      padding: 7px 8px;
-      text-align: left;
-    }
-
-    .demand-table thead tr {
-      background: rgba(15,23,42,0.95);
-      border-bottom: 1px solid rgba(75,85,99,0.9);
-    }
-
-    .row-daily {
-      background: rgba(56,189,248,0.10);
-      border-top: 1px solid rgba(56,189,248,0.35);
-      border-bottom: 1px solid rgba(56,189,248,0.25);
-    }
-
-    .row-weekly {
-      background: rgba(250,204,21,0.10);
-      border-top: 1px solid rgba(250,204,21,0.35);
-      border-bottom: 1px solid rgba(250,204,21,0.25);
-    }
-
-    .row-monthly {
-      background: rgba(248,113,113,0.10);
-      border-top: 1px solid rgba(248,113,113,0.35);
-      border-bottom: 1px solid rgba(248,113,113,0.25);
-    }
-
-    .hidden-print { display: block; }
-
-    @media print {
-      body { background: #ffffff; color: #000000; }
-      .hidden-print { display: none !important; }
-      .card, .table-card {
-        box-shadow: none !important;
-        background: #ffffff !important;
-        border-color: #d1d5db !important;
-      }
-    }
-  </style>
+/* -----------------------------------------------------------
+   PRINT
+----------------------------------------------------------- */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; color: black; }
+  .card, .table-card {
+    background: white !important;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="app-shell">
-    <header class="app-header hidden-print">
-      <div class="brand-block">
-        <div class="brand-logo">HC</div>
-        <div class="brand-text">
-          <h1>HYDROCHEM POOL DOSE ENGINE</h1>
-          <h2>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</h2>
-        </div>
-      </div>
-      <div class="header-badges">
-        <div class="pill">
-          <span class="dot"></span>
-          UAE CLIMATE MODEL · HIGH SOLAR LOAD
-        </div>
-        <div class="pill">
-          OPTION A — FULL DASHBOARD
-        </div>
-      </div>
-    </header>
+<div class="app">
 
-    <main class="layout">
-      <!-- LEFT: INPUTS -->
-      <section class="card">
-        <div class="card-inner">
-          <div class="card-header">
-            <div>
-              <div class="card-title">INPUTS · PROJECT &amp; POOL DATA</div>
-              <div class="card-subtitle">Pool details and chemistry targets.</div>
-            </div>
-            <div class="badge">
-              CLIMATE: <strong>GENERAL UAE</strong>
-            </div>
-          </div>
+<!-- ---------------------------------------------------------
+     INPUT SECTION
+--------------------------------------------------------- -->
+<div class="grid">
+<div class="card no-print">
+  <div class="card-title">Pool Inputs</div>
 
-          <div class="grid-2">
-            <div class="field">
-              <label for="projectName">PROJECT NAME</label>
-              <input id="projectName" type="text" placeholder="e.g. VILLA POOL – DUBAI" />
-            </div>
-            <div class="field">
-              <label for="projectRef">PROJECT REF</label>
-              <input id="projectRef" type="text" placeholder="e.g. P-24-POOL-017" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="location">LOCATION</label>
-              <input id="location" type="text" value="Dubai, UAE" />
-            </div>
-            <div class="field">
-              <label for="surfaceArea">POOL SURFACE AREA (m²)</label>
-              <input id="surfaceArea" type="number" min="0" step="0.01" placeholder="e.g. 32.0" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="avgDepth">AVERAGE DEPTH (m)</label>
-              <input id="avgDepth" type="number" min="0" step="0.01" placeholder="e.g. 1.4" />
-            </div>
-            <div class="field">
-              <label for="volume">POOL VOLUME (m³)</label>
-              <input id="volume" type="number" min="0" step="0.01" placeholder="e.g. 45.0" />
-              <small>If provided, overrides area × depth.</small>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>VOLUME INPUT PRIORITY</label>
-            <div class="radio-row">
-              <label class="radio-pill active">
-                <input type="radio" name="volMode" value="auto" checked />
-                AUTO (VOLUME IF GIVEN, ELSE AREA × DEPTH)
-              </label>
-              <label class="radio-pill">
-                <input type="radio" name="volMode" value="area" />
-                FORCE AREA × DEPTH
-              </label>
-              <label class="radio-pill">
-                <input type="radio" name="volMode" value="volume" />
-                FORCE DIRECT VOLUME
-              </label>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="targetChlorine">TARGET FREE CHLORINE (ppm)</label>
-              <input id="targetChlorine" type="number" min="0" step="0.1" value="2.5" />
-            </div>
-            <div class="field">
-              <label for="uaeFactor">UAE CLIMATE FACTOR (–)</label>
-              <input id="uaeFactor" type="number" min="1" step="0.05" value="1.25" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="currentPh">CURRENT PH</label>
-              <input id="currentPh" type="number" min="0" max="14" step="0.01" value="7.8" />
-            </div>
-            <div class="field">
-              <label for="targetPh">TARGET PH</label>
-              <input id="targetPh" type="number" min="0" max="14" step="0.01" value="7.2" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="chlorineBrand">CHLORINE BRAND SELECTION</label>
-              <select id="chlorineBrand">
-                <option value="B" selected>HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)</option>
-                <option value="A">Aquachlor (Calcium Hypochlorite 70%)</option>
-                <option value="C">HI-CHLON 65G (≥65% available chlorine)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="exportMode">EXPORT MODE</label>
-              <select id="exportMode">
-                <option value="summary" selected>POOL DETAILS + DAILY/WEEKLY/MONTHLY DEMAND ONLY</option>
-              </select>
-              <small>Preview and export only the key demand summary.</small>
-            </div>
-          </div>
-
-          <div class="button-row hidden-print">
-            <button id="btnCalculate">
-              <span>⚙️</span>
-              CALCULATE
-            </button>
-            <button id="btnExportPdf" class="secondary">
-              <span>🖨️</span>
-              EXPORT PDF
-            </button>
-            <button id="btnExportWord" class="secondary">
-              <span>📝</span>
-              EXPORT WORD
-            </button>
-          </div>
-
-          <div class="button-row hidden-print" style="margin-top:6px;">
-            <button id="btnSaveLocal" class="secondary">
-              💾 SAVE SETTINGS
-            </button>
-            <button id="btnLoadLocal" class="secondary">
-              📂 LOAD SETTINGS
-            </button>
-            <button id="btnExportJson" class="secondary">
-              ⬇️ EXPORT SETTINGS
-            </button>
-            <button id="btnImportJson" class="secondary">
-              ⬆️ IMPORT SETTINGS
-            </button>
-            <input id="importFile" type="file" accept="application/json" style="display:none;" />
-          </div>
-
-          <div class="status-bar hidden-print">
-            <div class="status-text" id="statusText">
-              <span class="status-dot"></span>
-              READY · ENTER DATA AND CLICK “CALCULATE”.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT: TABLE ONLY -->
-      <section class="card">
-        <div class="card-inner">
-          <div class="card-header">
-            <div>
-              <div class="card-title">CHLORINE &amp; PH DEMAND TABLE</div>
-              <div class="card-subtitle">Daily, weekly and monthly demand in Kg only.</div>
-            </div>
-            <div class="badge">
-              REPORT TITLE: <strong>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</strong>
-            </div>
-          </div>
-
-          <div class="table-card" id="tableCard">
-            <div class="table-card-title">CHLORINE &amp; POOL ACID DEMAND SUMMARY (Kg ONLY)</div>
-            <div class="table-meta" id="tableMeta">
-              EFFECTIVE POOL VOLUME: – · LOCATION: Dubai, UAE
-            </div>
-            <table class="demand-table">
-              <thead>
-                <tr>
-                  <th>PERIOD</th>
-                  <th>ACTIVE CHLORINE (Kg)</th>
-                  <th id="brandHeader">HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%) (Kg)</th>
-                  <th>POOL ACID NaHSO₄ (Kg)</th>
-                </tr>
-              </thead>
-              <tbody id="demandTableBody">
-                <tr class="row-daily">
-                  <td>DAILY</td>
-                  <td>–</td>
-                  <td>–</td>
-                  <td>–</td>
-                </tr>
-                <tr class="row-weekly">
-                  <td>WEEKLY</td>
-                  <td>–</td>
-                  <td>–</td>
-                  <td>–</td>
-                </tr>
-                <tr class="row-monthly">
-                  <td>MONTHLY</td>
-                  <td>–</td>
-                  <td>–</td>
-                  <td>–</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </section>
-    </main>
+  <div class="field">
+    <label>Project Name</label>
+    <input id="projectName" type="text" placeholder="e.g. VILLA POOL" />
   </div>
 
-  <script>
-    const CHLORINE_BRANDS = {
-      A: {
-        name: "Aquachlor (Calcium Hypochlorite 70%)",
-        availableChlorineFraction: 0.70
-      },
-      B: {
-        name: "HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)",
-        availableChlorineFraction: 0.70
-      },
-      C: {
-        name: "HI-CHLON 65G (≥65% available chlorine)",
-        availableChlorineFraction: 0.65
-      }
-    };
+  <div class="field">
+    <label>Project Ref</label>
+    <input id="projectRef" type="text" placeholder="e.g. P-24-POOL-017" />
+  </div>
 
-    const ACID_GRAMS_PER_M3_PER_PH = 50;
-    const LOCAL_KEY = "poolDoseSettings";
+  <div class="field">
+    <label>Location</label>
+    <input id="location" type="text" value="Dubai, UAE" />
+  </div>
 
-    function setStatus(message, type = "ok") {
-      const statusText = document.getElementById("statusText");
-      if (!statusText) return;
-      statusText.innerHTML = "";
-      const dot = document.createElement("span");
-      dot.className = "status-dot";
-      if (type === "warn") {
-        dot.style.background = "#facc15";
-        dot.style.boxShadow = "0 0 0 4px rgba(250,204,21,0.25)";
-      } else if (type === "err") {
-        dot.style.background = "#f97373";
-        dot.style.boxShadow = "0 0 0 4px rgba(248,113,113,0.25)";
-      }
-      const textSpan = document.createElement("span");
-      textSpan.textContent = " " + message;
-      statusText.appendChild(dot);
-      statusText.appendChild(textSpan);
-    }
+  <div class="field">
+    <label>Surface Area (m²)</label>
+    <input id="surfaceArea" type="number" step="0.01" />
+  </div>
 
-    function formatNumber(value, decimals = 3) {
-      if (value === null || value === undefined || isNaN(value)) return "–";
-      return Number(value).toFixed(decimals);
-    }
+  <div class="field">
+    <label>Average Depth (m)</label>
+    <input id="avgDepth" type="number" step="0.01" />
+  </div>
 
-    function gramsToKg(value) {
-      if (value === null || value === undefined || isNaN(value)) return null;
-      return Number(value) / 1000;
-    }
+  <div class="field">
+    <label>Pool Volume (m³)</label>
+    <input id="volume" type="number" step="0.01" />
+  </div>
 
-    function getVolume() {
-      const surfaceArea = parseFloat(document.getElementById("surfaceArea").value);
-      const avgDepth = parseFloat(document.getElementById("avgDepth").value);
-      const volumeInput = parseFloat(document.getElementById("volume").value);
-      const mode = document.querySelector("input[name='volMode']:checked")?.value || "auto";
+  <div class="field">
+    <label>Target Free Chlorine (ppm)</label>
+    <input id="targetCl" type="number" value="2.5" step="0.1" />
+  </div>
 
-      let volumeFromArea = null;
-      if (!isNaN(surfaceArea) && surfaceArea > 0 && !isNaN(avgDepth) && avgDepth > 0) {
-        volumeFromArea = surfaceArea * avgDepth;
-      }
+  <div class="field">
+    <label>UAE Climate Factor</label>
+    <input id="uaeFactor" type="number" value="1.25" step="0.05" />
+  </div>
 
-      if (mode === "volume") return isNaN(volumeInput) ? null : volumeInput;
-      if (mode === "area") return volumeFromArea;
+  <div class="field">
+    <label>Current pH</label>
+    <input id="currentPh" type="number" value="7.8" step="0.01" />
+  </div>
 
-      if (!isNaN(volumeInput) && volumeInput > 0) return volumeInput;
-      return volumeFromArea;
-    }
+  <div class="field">
+    <label>Target pH</label>
+    <input id="targetPh" type="number" value="7.2" step="0.01" />
+  </div>
 
-    function getChlorineBrand() {
-      const val = document.getElementById("chlorineBrand").value || "B";
-      return CHLORINE_BRANDS[val] || CHLORINE_BRANDS.B;
-    }
+  <div class="field">
+    <label>Chlorine Brand</label>
+    <select id="brand">
+      <option value="HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)" selected>
+        HTH® Dry Chlorine Granular (Calcium Hypochlorite 70%)
+      </option>
+      <option value="Aquachlor (Calcium Hypochlorite 70%)">Aquachlor (Calcium Hypochlorite 70%)</option>
+      <option value="HI-CHLON 65G (≥65% available chlorine)">HI-CHLON 65G (≥65% available chlorine)</option>
+    </select>
+  </div>
 
-    function calculateDoses() {
-      const volumeM3 = getVolume();
-      const targetCl = parseFloat(document.getElementById("targetChlorine").value);
-      const uaeFactor = parseFloat(document.getElementById("uaeFactor").value);
-      const currentPh = parseFloat(document.getElementById("currentPh").value);
-      const targetPh = parseFloat(document.getElementById("targetPh").value);
-      const brand = getChlorineBrand();
-      const location = document.getElementById("location").value || "Dubai, UAE";
+  <button id="calcBtn">Calculate</button>
+  <button id="pdfBtn" class="secondary">Export PDF</button>
+  <button id="wordBtn" class="secondary">Export Word</button>
 
-      if (!volumeM3 || volumeM3 <= 0) {
-        setStatus("VOLUME IS NOT DEFINED. PROVIDE POOL VOLUME OR AREA & AVERAGE DEPTH.", "err");
-        return null;
-      }
-      if (isNaN(targetCl) || targetCl <= 0) {
-        setStatus("TARGET FREE CHLORINE (ppm) MUST BE POSITIVE.", "err");
-        return null;
-      }
-      if (isNaN(uaeFactor) || uaeFactor <= 0) {
-        setStatus("UAE CLIMATE FACTOR MUST BE POSITIVE.", "err");
-        return null;
-      }
+  <br><br>
 
-      const dailyActiveChlorine_g = volumeM3 * targetCl * uaeFactor;
-      const dailyProductChlorine_g = dailyActiveChlorine_g / brand.availableChlorineFraction;
+  <button id="saveLocal" class="secondary">Save Settings</button>
+  <button id="loadLocal" class="secondary">Load Settings</button>
+  <button id="exportJson" class="secondary">Export JSON</button>
+  <button id="importJson" class="secondary">Import JSON</button>
+  <input id="jsonFile" type="file" accept="application/json" style="display:none;" />
 
-      const weeklyActiveChlorine_g = dailyActiveChlorine_g * 7;
-      const weeklyProductChlorine_g = dailyProductChlorine_g * 7;
+  <div class="status" id="status"><span class="status-dot"></span>Ready</div>
+</div>
 
-      const monthlyActiveChlorine_g = dailyActiveChlorine_g * 30;
-      const monthlyProductChlorine_g = dailyProductChlorine_g * 30;
+<!-- ---------------------------------------------------------
+     SUMMARY + TABLE
+--------------------------------------------------------- -->
+<div class="card" id="summaryCard">
+  <div class="card-title">Swimming Pool / Water Feature Chlorine & pH Calculations</div>
 
-      let deltaPh = 0;
-      if (!isNaN(currentPh) && !isNaN(targetPh)) deltaPh = currentPh - targetPh;
+  <div id="poolDetails"></div>
 
-      let dailyAcid_g = 0, weeklyAcid_g = 0, monthlyAcid_g = 0;
-      if (deltaPh > 0) {
-        const totalAcid_g = volumeM3 * deltaPh * ACID_GRAMS_PER_M3_PER_PH;
-        dailyAcid_g = totalAcid_g / 7;
-        weeklyAcid_g = totalAcid_g;
-        monthlyAcid_g = (totalAcid_g / 7) * 30;
-      }
+  <div class="table-card">
+    <div class="table-title">Chlorine & Pool Acid Demand Summary (Kg Only)</div>
+    <div class="table-meta" id="tableMeta">EFFECTIVE POOL VOLUME: –</div>
 
-      const dailyActiveChlorine_kg = gramsToKg(dailyActiveChlorine_g);
-      const weeklyActiveChlorine_kg = gramsToKg(weeklyActiveChlorine_g);
-      const monthlyActiveChlorine_kg = gramsToKg(monthlyActiveChlorine_g);
-
-      const dailyProductChlorine_kg = gramsToKg(dailyProductChlorine_g);
-      const weeklyProductChlorine_kg = gramsToKg(weeklyProductChlorine_g);
-      const monthlyProductChlorine_kg = gramsToKg(monthlyProductChlorine_g);
-
-      const dailyAcid_kg = gramsToKg(dailyAcid_g);
-      const weeklyAcid_kg = gramsToKg(weeklyAcid_g);
-      const monthlyAcid_kg = gramsToKg(monthlyAcid_g);
-
-      // Update table meta
-      document.getElementById("tableMeta").textContent =
-        "EFFECTIVE POOL VOLUME: " + formatNumber(volumeM3, 2) + " m³ · LOCATION: " + location;
-
-      // Update brand header
-      const brandHeader = document.getElementById("brandHeader");
-      brandHeader.textContent = brand.name + " (Kg)";
-
-      // Update table body
-      const tbody = document.getElementById("demandTableBody");
-      tbody.innerHTML = `
-        <tr class="row-daily">
-          <td>DAILY</td>
-          <td>${formatNumber(dailyActiveChlorine_kg, 3)}</td>
-          <td>${formatNumber(dailyProductChlorine_kg, 3)}</td>
-          <td>${deltaPh > 0 ? formatNumber(dailyAcid_kg, 3) : "0.000"}</td>
+    <table>
+      <thead>
+        <tr>
+          <th>PERIOD</th>
+          <th>ACTIVE CHLORINE (Kg)</th>
+          <th id="brandHeader">BRAND (Kg)</th>
+          <th>POOL ACID NaHSO₄ (Kg)</th>
         </tr>
-        <tr class="row-weekly">
-          <td>WEEKLY</td>
-          <td>${formatNumber(weeklyActiveChlorine_kg, 3)}</td>
-          <td>${formatNumber(weeklyProductChlorine_kg, 3)}</td>
-          <td>${deltaPh > 0 ? formatNumber(weeklyAcid_kg, 3) : "0.000"}</td>
-        </tr>
-        <tr class="row-monthly">
-          <td>MONTHLY</td>
-          <td>${formatNumber(monthlyActiveChlorine_kg, 3)}</td>
-          <td>${formatNumber(monthlyProductChlorine_kg, 3)}</td>
-          <td>${deltaPh > 0 ? formatNumber(monthlyAcid_kg, 3) : "0.000"}</td>
-        </tr>
-      `;
+      </thead>
+      <tbody id="tableBody">
+        <tr class="row-daily"><td>DAILY</td><td>–</td><td>–</td><td>–</td></tr>
+        <tr class="row-weekly"><td>WEEKLY</td><td>–</td><td>–</td><td>–</td></tr>
+        <tr class="row-monthly"><td>MONTHLY</td><td>–</td><td>–</td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+</div>
 
-      setStatus("CALCULATION COMPLETE. TABLE UPDATED (Kg ONLY).", "ok");
+<script>
+/* -----------------------------------------------------------
+   CALCULATION LOGIC
+----------------------------------------------------------- */
+function calc() {
+  const name = projectName.value || "N/A";
+  const ref = projectRef.value || "N/A";
+  const loc = location.value || "Dubai, UAE";
+  const area = parseFloat(surfaceArea.value);
+  const depth = parseFloat(avgDepth.value);
+  const volInput = parseFloat(volume.value);
+  const targetCl = parseFloat(targetCl.value);
+  const uae = parseFloat(uaeFactor.value);
+  const phNow = parseFloat(currentPh.value);
+  const phTarget = parseFloat(targetPh.value);
+  const brandName = brand.value;
 
-      return {
-        volumeM3,
-        targetCl,
-        uaeFactor,
-        currentPh,
-        targetPh,
-        deltaPh,
-        brand,
-        location,
-        dailyActiveChlorine_kg,
-        weeklyActiveChlorine_kg,
-        monthlyActiveChlorine_kg,
-        dailyProductChlorine_kg,
-        weeklyProductChlorine_kg,
-        monthlyProductChlorine_kg,
-        dailyAcid_kg,
-        weeklyAcid_kg,
-        monthlyAcid_kg
-      };
-    }
+  let volumeM3 = volInput || (area * depth);
 
-    function buildExportHtml(calc) {
-      const projectName = document.getElementById("projectName").value || "UNSPECIFIED PROJECT";
-      const projectRef = document.getElementById("projectRef").value || "N/A";
-      const location = calc.location || (document.getElementById("location").value || "Dubai, UAE");
+  const dailyCl = volumeM3 * targetCl * uae / 1000;
+  const brandKg = dailyCl / 0.70;
+  const phDrop = phNow - phTarget;
+  const acidKg = phDrop > 0 ? (volumeM3 * phDrop * 50) / 7000 : 0;
 
-      const header = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office"
-              xmlns:w="urn:schemas-microsoft-com:office:word"
-              xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="utf-8"><title>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</title></head><body>
-        <h2 style="font-family:Arial, sans-serif;">SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</h2>
-        <h3 style="font-family:Arial, sans-serif;">POOL DETAILS</h3>
-        <p style="font-family:Arial, sans-serif;"><strong>PROJECT NAME:</strong> ${escapeHtml(projectName)}</p>
-        <p style="font-family:Arial, sans-serif;"><strong>PROJECT REF:</strong> ${escapeHtml(projectRef)}</p>
-        <p style="font-family:Arial, sans-serif;"><strong>LOCATION:</strong> ${escapeHtml(location)}</p>
-        <p style="font-family:Arial, sans-serif;"><strong>EFFECTIVE POOL VOLUME:</strong> ${formatNumber(calc.volumeM3, 2)} m³</p>
-        <p style="font-family:Arial, sans-serif;"><strong>TARGET FREE CHLORINE:</strong> ${formatNumber(calc.targetCl, 2)} ppm</p>
-        <p style="font-family:Arial, sans-serif;"><strong>UAE CLIMATE FACTOR:</strong> ${formatNumber(calc.uaeFactor, 2)}</p>
-        <p style="font-family:Arial, sans-serif;"><strong>CURRENT PH:</strong> ${formatNumber(calc.currentPh, 2)} · <strong>TARGET PH:</strong> ${formatNumber(calc.targetPh, 2)}</p>
-        <p style="font-family:Arial, sans-serif;"><strong>CHLORINE BRAND:</strong> ${escapeHtml(calc.brand.name)}</p>
-        <h3 style="font-family:Arial, sans-serif;">DAILY / WEEKLY / MONTHLY DEMAND (Kg ONLY)</h3>
-        <table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-family:Arial, sans-serif;">
-          <tr style="background:#e5e7eb;">
-            <th>PERIOD</th>
-            <th>ACTIVE CHLORINE (Kg)</th>
-            <th>${escapeHtml(calc.brand.name)} (Kg)</th>
-            <th>POOL ACID NaHSO₄ (Kg)</th>
-          </tr>
-          <tr>
-            <td>DAILY</td>
-            <td>${formatNumber(calc.dailyActiveChlorine_kg, 3)}</td>
-            <td>${formatNumber(calc.dailyProductChlorine_kg, 3)}</td>
-            <td>${calc.deltaPh > 0 ? formatNumber(calc.dailyAcid_kg, 3) : "0.000"}</td>
-          </tr>
-          <tr>
-            <td>WEEKLY</td>
-            <td>${formatNumber(calc.weeklyActiveChlorine_kg, 3)}</td>
-            <td>${formatNumber(calc.weeklyProductChlorine_kg, 3)}</td>
-            <td>${calc.deltaPh > 0 ? formatNumber(calc.weeklyAcid_kg, 3) : "0.000"}</td>
-          </tr>
-          <tr>
-            <td>MONTHLY</td>
-            <td>${formatNumber(calc.monthlyActiveChlorine_kg, 3)}</td>
-            <td>${formatNumber(calc.monthlyProductChlorine_kg, 3)}</td>
-            <td>${calc.deltaPh > 0 ? formatNumber(calc.monthlyAcid_kg, 3) : "0.000"}</td>
-          </tr>
-        </table>
-      `;
-      const footer = "</body></html>";
-      return header + footer;
-    }
+  poolDetails.innerHTML = `
+    <p><strong>PROJECT NAME:</strong> ${name}</p>
+    <p><strong>PROJECT REF:</strong> ${ref}</p>
+    <p><strong>LOCATION:</strong> ${loc}</p>
+    <p><strong>EFFECTIVE POOL VOLUME:</strong> ${volumeM3.toFixed(2)} m³</p>
+    <p><strong>TARGET FREE CHLORINE:</strong> ${targetCl} ppm</p>
+    <p><strong>UAE CLIMATE FACTOR:</strong> ${uae}</p>
+    <p><strong>CURRENT PH:</strong> ${phNow} · <strong>TARGET PH:</strong> ${phTarget}</p>
+    <p><strong>CHLORINE BRAND:</strong> ${brandName}</p>
+  `;
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+  brandHeader.textContent = brandName + " (Kg)";
+  tableMeta.textContent = "EFFECTIVE POOL VOLUME: " + volumeM3.toFixed(2) + " m³";
 
-    function exportPdf() {
-      const calc = calculateDoses();
-      if (!calc) return;
-      setStatus("USE BROWSER PRINT DIALOG TO SAVE AS PDF.", "warn");
-      window.print();
-    }
+  tableBody.innerHTML = `
+    <tr class="row-daily">
+      <td>DAILY</td>
+      <td>${dailyCl.toFixed(3)}</td>
+      <td>${brandKg.toFixed(3)}</td>
+      <td>${acidKg.toFixed(3)}</td>
+    </tr>
+    <tr class="row-weekly">
+      <td>WEEKLY</td>
+      <td>${(dailyCl*7).toFixed(3)}</td>
+      <td>${(brandKg*7).toFixed(3)}</td>
+      <td>${(acidKg*7).toFixed(3)}</td>
+    </tr>
+    <tr class="row-monthly">
+      <td>MONTHLY</td>
+      <td>${(dailyCl*30).toFixed(3)}</td>
+      <td>${(brandKg*30).toFixed(3)}</td>
+      <td>${(acidKg*30).toFixed(3)}</td>
+    </tr>
+  `;
 
-    function exportWord() {
-      const calc = calculateDoses();
-      if (!calc) return;
-      const sourceHTML = buildExportHtml(calc);
-      const blob = new Blob(['\ufeff', sourceHTML], { type: "application/msword" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "SWIMMING_POOL_WATER_FEATURE_CHLORINE_PH_CALCULATIONS_SUMMARY.doc";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      setStatus("WORD DOCUMENT EXPORTED (POOL DETAILS + TABLE, Kg ONLY).", "ok");
-    }
+  status.innerHTML = `<span class="status-dot"></span>Calculation complete`;
+}
 
-    // LOCAL STORAGE SAVE/LOAD
-    function saveToLocal() {
-      const data = {
-        projectName: document.getElementById("projectName").value,
-        projectRef: document.getElementById("projectRef").value,
-        location: document.getElementById("location").value,
-        surfaceArea: document.getElementById("surfaceArea").value,
-        avgDepth: document.getElementById("avgDepth").value,
-        volume: document.getElementById("volume").value,
-        targetChlorine: document.getElementById("targetChlorine").value,
-        uaeFactor: document.getElementById("uaeFactor").value,
-        currentPh: document.getElementById("currentPh").value,
-        targetPh: document.getElementById("targetPh").value,
-        chlorineBrand: document.getElementById("chlorineBrand").value,
-        volMode: document.querySelector("input[name='volMode']:checked")?.value || "auto"
-      };
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
-      setStatus("SETTINGS SAVED LOCALLY (THIS BROWSER & DEVICE).", "ok");
-    }
+/* -----------------------------------------------------------
+   SAVE / LOAD / EXPORT / IMPORT
+----------------------------------------------------------- */
+saveLocal.onclick = () => {
+  const data = {
+    projectName: projectName.value,
+    projectRef: projectRef.value,
+    location: location.value,
+    surfaceArea: surfaceArea.value,
+    avgDepth: avgDepth.value,
+    volume: volume.value,
+    targetCl: targetCl.value,
+    uaeFactor: uaeFactor.value,
+    currentPh: currentPh.value,
+    targetPh: targetPh.value,
+    brand: brand.value
+  };
+  localStorage.setItem("poolSettings", JSON.stringify(data));
+  status.innerHTML = `<span class="status-dot"></span>Settings saved`;
+};
 
-    function loadFromLocal() {
-      const raw = localStorage.getItem(LOCAL_KEY);
-      if (!raw) {
-        setStatus("NO LOCAL SETTINGS FOUND TO LOAD.", "warn");
-        return;
-      }
-      try {
-        const data = JSON.parse(raw);
-        document.getElementById("projectName").value = data.projectName || "";
-        document.getElementById("projectRef").value = data.projectRef || "";
-        document.getElementById("location").value = data.location || "Dubai, UAE";
-        document.getElementById("surfaceArea").value = data.surfaceArea || "";
-        document.getElementById("avgDepth").value = data.avgDepth || "";
-        document.getElementById("volume").value = data.volume || "";
-        document.getElementById("targetChlorine").value = data.targetChlorine || "2.5";
-        document.getElementById("uaeFactor").value = data.uaeFactor || "1.25";
-        document.getElementById("currentPh").value = data.currentPh || "7.8";
-        document.getElementById("targetPh").value = data.targetPh || "7.2";
-        document.getElementById("chlorineBrand").value = data.chlorineBrand || "B";
+loadLocal.onclick = () => {
+  const data = JSON.parse(localStorage.getItem("poolSettings") || "{}");
+  Object.keys(data).forEach(k => { if (document.getElementById(k)) document.getElementById(k).value = data[k]; });
+  status.innerHTML = `<span class="status-dot"></span>Settings loaded`;
+};
 
-        const mode = data.volMode || "auto";
-        document.querySelectorAll(".radio-pill input").forEach(function (input) {
-          input.checked = (input.value === mode);
-        });
-        document.querySelectorAll(".radio-pill").forEach(function (pill) {
-          pill.classList.remove("active");
-        });
-        const active = document.querySelector(".radio-pill input[value='" + mode + "']");
-        if (active && active.closest(".radio-pill")) {
-          active.closest(".radio-pill").classList.add("active");
-        }
+exportJson.onclick = () => {
+  const data = localStorage.getItem("poolSettings");
+  const blob = new Blob([data], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "pool_settings.json";
+  a.click();
+};
 
-        setStatus("SETTINGS LOADED FROM LOCAL STORAGE.", "ok");
-      } catch (e) {
-        setStatus("FAILED TO LOAD LOCAL SETTINGS.", "err");
-      }
-    }
+importJson.onclick = () => jsonFile.click();
 
-    // JSON EXPORT/IMPORT
-    function exportJson() {
-      const data = {
-        projectName: document.getElementById("projectName").value,
-        projectRef: document.getElementById("projectRef").value,
-        location: document.getElementById("location").value,
-        surfaceArea: document.getElementById("surfaceArea").value,
-        avgDepth: document.getElementById("avgDepth").value,
-        volume: document.getElementById("volume").value,
-        targetChlorine: document.getElementById("targetChlorine").value,
-        uaeFactor: document.getElementById("uaeFactor").value,
-        currentPh: document.getElementById("currentPh").value,
-        targetPh: document.getElementById("targetPh").value,
-        chlorineBrand: document.getElementById("chlorineBrand").value,
-        volMode: document.querySelector("input[name='volMode']:checked")?.value || "auto"
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "pool_dose_settings.json";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      setStatus("SETTINGS EXPORTED AS JSON FILE.", "ok");
-    }
+jsonFile.onchange = e => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    const data = JSON.parse(reader.result);
+    Object.keys(data).forEach(k => { if (document.getElementById(k)) document.getElementById(k).value = data[k]; });
+    status.innerHTML = `<span class="status-dot"></span>Settings imported`;
+  };
+  reader.readAsText(file);
+};
 
-    function importJson(file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          document.getElementById("projectName").value = data.projectName || "";
-          document.getElementById("projectRef").value = data.projectRef || "";
-          document.getElementById("location").value = data.location || "Dubai, UAE";
-          document.getElementById("surfaceArea").value = data.surfaceArea || "";
-          document.getElementById("avgDepth").value = data.avgDepth || "";
-          document.getElementById("volume").value = data.volume || "";
-          document.getElementById("targetChlorine").value = data.targetChlorine || "2.5";
-          document.getElementById("uaeFactor").value = data.uaeFactor || "1.25";
-          document.getElementById("currentPh").value = data.currentPh || "7.8";
-          document.getElementById("targetPh").value = data.targetPh || "7.2";
-          document.getElementById("chlorineBrand").value = data.chlorineBrand || "B";
+/* -----------------------------------------------------------
+   EXPORT PDF / WORD
+----------------------------------------------------------- */
+pdfBtn.onclick = () => window.print();
 
-          const mode = data.volMode || "auto";
-          document.querySelectorAll(".radio-pill input").forEach(function (input) {
-            input.checked = (input.value === mode);
-          });
-          document.querySelectorAll(".radio-pill").forEach(function (pill) {
-            pill.classList.remove("active");
-          });
-          const active = document.querySelector(".radio-pill input[value='" + mode + "']");
-          if (active && active.closest(".radio-pill")) {
-            active.closest(".radio-pill").classList.add("active");
-          }
+wordBtn.onclick = () => {
+  const html = summaryCard.innerHTML;
+  const blob = new Blob(['\ufeff', html], { type: "application/msword" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Pool_Dose_Summary.doc";
+  a.click();
+};
 
-          setStatus("SETTINGS IMPORTED FROM JSON FILE.", "ok");
-        } catch (err) {
-          setStatus("FAILED TO IMPORT JSON SETTINGS.", "err");
-        }
-      };
-      reader.readAsText(file);
-    }
+/* -----------------------------------------------------------
+   CALCULATE BUTTON
+----------------------------------------------------------- */
+calcBtn.onclick = calc;
+</script>
 
-    // EVENTS
-    document.getElementById("btnCalculate").addEventListener("click", function (e) {
-      e.preventDefault();
-      calculateDoses();
-    });
-
-    document.getElementById("btnExportPdf").addEventListener("click", function (e) {
-      e.preventDefault();
-      exportPdf();
-    });
-
-    document.getElementById("btnExportWord").addEventListener("click", function (e) {
-      e.preventDefault();
-      exportWord();
-    });
-
-    document.getElementById("btnSaveLocal").addEventListener("click", function (e) {
-      e.preventDefault();
-      saveToLocal();
-    });
-
-    document.getElementById("btnLoadLocal").addEventListener("click", function (e) {
-      e.preventDefault();
-      loadFromLocal();
-    });
-
-    document.getElementById("btnExportJson").addEventListener("click", function (e) {
-      e.preventDefault();
-      exportJson();
-    });
-
-    document.getElementById("btnImportJson").addEventListener("click", function (e) {
-      e.preventDefault();
-      document.getElementById("importFile").click();
-    });
-
-    document.getElementById("importFile").addEventListener("change", function (e) {
-      const file = e.target.files[0];
-      if (file) importJson(file);
-      e.target.value = "";
-    });
-
-    document.querySelectorAll(".radio-pill input").forEach(function (input) {
-      input.addEventListener("change", function () {
-        document.querySelectorAll(".radio-pill").forEach(function (pill) {
-          pill.classList.remove("active");
-        });
-        const parent = input.closest(".radio-pill");
-        if (parent) parent.classList.add("active");
-      });
-    });
-
-    setStatus("READY · ENTER DATA AND CLICK “CALCULATE”.", "ok");
-  </script>
 </body>
 </html>

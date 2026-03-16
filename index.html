@@ -9,7 +9,6 @@
       --bg: #05070b;
       --bg-card: #0b1120;
       --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,0.15);
       --text: #e5e7eb;
       --muted: #9ca3af;
       --border-subtle: #1f2937;
@@ -17,7 +16,6 @@
       --warning: #facc15;
       --danger: #f97373;
       --radius-lg: 14px;
-      --radius-md: 10px;
       --radius-pill: 999px;
       --shadow-soft: 0 18px 45px rgba(0,0,0,0.65);
       --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
@@ -322,10 +320,11 @@
       border: 1px dashed rgba(55,65,81,0.9);
       background: rgba(15,23,42,0.9);
       padding: 10px 10px 12px;
-      max-height: 520px;
+      max-height: 320px;
       overflow: auto;
       font-size: 12px;
       line-height: 1.45;
+      margin-bottom: 10px;
     }
 
     .report-shell h2 {
@@ -345,10 +344,6 @@
     }
 
     .report-shell p { margin: 2px 0 4px; color: #d1d5db; }
-
-    .report-shell ul { margin: 2px 0 4px 16px; padding: 0; }
-
-    .report-shell li { margin-bottom: 2px; }
 
     .summary-row {
       display: grid;
@@ -397,6 +392,60 @@
       color: #e5e7eb;
     }
 
+    /* Table card below summary */
+    .table-card {
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.98);
+      padding: 10px 10px 12px;
+      font-size: 12px;
+    }
+
+    .table-card-title {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: #e5e7eb;
+    }
+
+    .demand-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .demand-table th,
+    .demand-table td {
+      padding: 7px 8px;
+      text-align: left;
+    }
+
+    .demand-table thead tr {
+      background: rgba(15,23,42,0.95);
+      border-bottom: 1px solid rgba(75,85,99,0.9);
+    }
+
+    .row-daily {
+      background: rgba(56,189,248,0.10);
+      border-top: 1px solid rgba(56,189,248,0.35);
+      border-bottom: 1px solid rgba(56,189,248,0.25);
+    }
+
+    .row-weekly {
+      background: rgba(250,204,21,0.10);
+      border-top: 1px solid rgba(250,204,21,0.35);
+      border-bottom: 1px solid rgba(250,204,21,0.25);
+    }
+
+    .row-monthly {
+      background: rgba(248,113,113,0.10);
+      border-top: 1px solid rgba(248,113,113,0.35);
+      border-bottom: 1px solid rgba(248,113,113,0.25);
+    }
+
     .status-bar {
       margin-top: 10px;
       display: flex;
@@ -427,14 +476,10 @@
     @media print {
       body { background: #ffffff; color: #000000; }
       .hidden-print { display: none !important; }
-      .card, .report-shell {
+      .card, .report-shell, .table-card {
         box-shadow: none !important;
         background: #ffffff !important;
         border-color: #d1d5db !important;
-      }
-      .report-shell {
-        max-height: none !important;
-        overflow: visible !important;
       }
     }
   </style>
@@ -594,13 +639,13 @@
         </div>
       </section>
 
-      <!-- RIGHT: SUMMARY REPORT -->
+      <!-- RIGHT: SUMMARY + TABLE -->
       <section class="card">
         <div class="card-inner">
           <div class="card-header">
             <div>
               <div class="card-title">SUMMARY · CHLORINE &amp; PH DEMAND</div>
-              <div class="card-subtitle">Daily, weekly and monthly demand for chlorine, pool acid and brand product.</div>
+              <div class="card-subtitle">Daily, weekly and monthly demand for chlorine, pool acid and brand product (Kg only).</div>
             </div>
             <div class="badge">
               REPORT TITLE: <strong>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</strong>
@@ -616,12 +661,12 @@
             <div class="metric-pill">
               <div class="metric-label">DAILY CHLORINE (ACTIVE)</div>
               <div class="metric-value" id="metricDailyCl">–</div>
-              <div class="metric-tag">g/day · kg/day</div>
+              <div class="metric-tag">Kg/day</div>
             </div>
             <div class="metric-pill">
               <div class="metric-label">DAILY POOL ACID</div>
               <div class="metric-value" id="metricDailyAcid">–</div>
-              <div class="metric-tag">g/day · kg/day NaHSO₄</div>
+              <div class="metric-tag">Kg/day NaHSO₄</div>
             </div>
           </div>
 
@@ -629,6 +674,41 @@
             <h2>REPORT TITLE: SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</h2>
             <p>Click <strong>CALCULATE DOSES</strong> and then <strong>PREVIEW SUMMARY</strong> to view the demand summary.</p>
           </div>
+
+          <div class="table-card" id="tableCard">
+            <div class="table-card-title">CHLORINE &amp; POOL ACID DEMAND SUMMARY (Kg ONLY)</div>
+            <table class="demand-table">
+              <thead>
+                <tr>
+                  <th>PERIOD</th>
+                  <th>ACTIVE CHLORINE (Kg)</th>
+                  <th>BRAND PRODUCT (Kg)</th>
+                  <th>POOL ACID NaHSO₄ (Kg)</th>
+                </tr>
+              </thead>
+              <tbody id="demandTableBody">
+                <tr class="row-daily">
+                  <td>DAILY</td>
+                  <td>–</td>
+                  <td>–</td>
+                  <td>–</td>
+                </tr>
+                <tr class="row-weekly">
+                  <td>WEEKLY</td>
+                  <td>–</td>
+                  <td>–</td>
+                  <td>–</td>
+                </tr>
+                <tr class="row-monthly">
+                  <td>MONTHLY</td>
+                  <td>–</td>
+                  <td>–</td>
+                  <td>–</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </section>
     </main>
@@ -671,14 +751,14 @@
       statusText.appendChild(textSpan);
     }
 
-    function formatNumber(value, decimals = 2) {
+    function formatNumber(value, decimals = 3) {
       if (value === null || value === undefined || isNaN(value)) return "–";
       return Number(value).toFixed(decimals);
     }
 
     function gramsToKg(value) {
-      if (value === null || value === undefined || isNaN(value)) return "–";
-      return (Number(value) / 1000).toFixed(3);
+      if (value === null || value === undefined || isNaN(value)) return null;
+      return Number(value) / 1000;
     }
 
     function getVolume() {
@@ -745,15 +825,47 @@
         monthlyAcid_g = (totalAcid_g / 7) * 30;
       }
 
-      document.getElementById("metricVolume").textContent = formatNumber(volumeM3, 2) + " m³";
-      const dailyClText = formatNumber(dailyActiveChlorine_g, 1) + " g (" + gramsToKg(dailyActiveChlorine_g) + " kg)";
-      document.getElementById("metricDailyCl").textContent = dailyClText;
-      const dailyAcidText = deltaPh > 0
-        ? formatNumber(dailyAcid_g, 1) + " g (" + gramsToKg(dailyAcid_g) + " kg)"
-        : "0.0 g (0.000 kg)";
-      document.getElementById("metricDailyAcid").textContent = dailyAcidText;
+      const dailyActiveChlorine_kg = gramsToKg(dailyActiveChlorine_g);
+      const weeklyActiveChlorine_kg = gramsToKg(weeklyActiveChlorine_g);
+      const monthlyActiveChlorine_kg = gramsToKg(monthlyActiveChlorine_g);
 
-      setStatus("CALCULATION COMPLETE. CLICK “PREVIEW SUMMARY” TO VIEW DEMAND.", "ok");
+      const dailyProductChlorine_kg = gramsToKg(dailyProductChlorine_g);
+      const weeklyProductChlorine_kg = gramsToKg(weeklyProductChlorine_g);
+      const monthlyProductChlorine_kg = gramsToKg(monthlyProductChlorine_g);
+
+      const dailyAcid_kg = gramsToKg(dailyAcid_g);
+      const weeklyAcid_kg = gramsToKg(weeklyAcid_g);
+      const monthlyAcid_kg = gramsToKg(monthlyAcid_g);
+
+      document.getElementById("metricVolume").textContent = formatNumber(volumeM3, 2) + " m³";
+      document.getElementById("metricDailyCl").textContent = formatNumber(dailyActiveChlorine_kg, 3) + " Kg";
+      document.getElementById("metricDailyAcid").textContent =
+        deltaPh > 0 ? formatNumber(dailyAcid_kg, 3) + " Kg" : "0.000 Kg";
+
+      // Update table
+      const tbody = document.getElementById("demandTableBody");
+      tbody.innerHTML = `
+        <tr class="row-daily">
+          <td>DAILY</td>
+          <td>${formatNumber(dailyActiveChlorine_kg, 3)}</td>
+          <td>${formatNumber(dailyProductChlorine_kg, 3)}</td>
+          <td>${deltaPh > 0 ? formatNumber(dailyAcid_kg, 3) : "0.000"}</td>
+        </tr>
+        <tr class="row-weekly">
+          <td>WEEKLY</td>
+          <td>${formatNumber(weeklyActiveChlorine_kg, 3)}</td>
+          <td>${formatNumber(weeklyProductChlorine_kg, 3)}</td>
+          <td>${deltaPh > 0 ? formatNumber(weeklyAcid_kg, 3) : "0.000"}</td>
+        </tr>
+        <tr class="row-monthly">
+          <td>MONTHLY</td>
+          <td>${formatNumber(monthlyActiveChlorine_kg, 3)}</td>
+          <td>${formatNumber(monthlyProductChlorine_kg, 3)}</td>
+          <td>${deltaPh > 0 ? formatNumber(monthlyAcid_kg, 3) : "0.000"}</td>
+        </tr>
+      `;
+
+      setStatus("CALCULATION COMPLETE. CLICK “PREVIEW SUMMARY” TO UPDATE REPORT & TABLE.", "ok");
 
       return {
         volumeM3,
@@ -763,15 +875,15 @@
         targetPh,
         deltaPh,
         brand,
-        dailyActiveChlorine_g,
-        dailyProductChlorine_g,
-        weeklyActiveChlorine_g,
-        weeklyProductChlorine_g,
-        monthlyActiveChlorine_g,
-        monthlyProductChlorine_g,
-        dailyAcid_g,
-        weeklyAcid_g,
-        monthlyAcid_g
+        dailyActiveChlorine_kg,
+        weeklyActiveChlorine_kg,
+        monthlyActiveChlorine_kg,
+        dailyProductChlorine_kg,
+        weeklyProductChlorine_kg,
+        monthlyProductChlorine_kg,
+        dailyAcid_kg,
+        weeklyAcid_kg,
+        monthlyAcid_kg
       };
     }
 
@@ -799,32 +911,32 @@
       report.push(`<p><strong>CURRENT PH:</strong> ${formatNumber(calc.currentPh, 2)} · <strong>TARGET PH:</strong> ${formatNumber(calc.targetPh, 2)}</p>`);
       report.push(`<p><strong>CHLORINE BRAND:</strong> ${escapeHtml(calc.brand.name)}</p>`);
 
-      report.push(`<h3>DAILY / WEEKLY / MONTHLY DEMAND SUMMARY</h3>`);
+      report.push(`<h3>DAILY / WEEKLY / MONTHLY DEMAND (Kg ONLY)</h3>`);
       report.push(`<div class="summary-row">
         <div class="summary-card daily">
           <div class="summary-title">DAILY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.dailyActiveChlorine_g, 1)} g/day (${gramsToKg(calc.dailyActiveChlorine_g)} kg/day)</div>
-          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.dailyProductChlorine_g, 1)} g/day (${gramsToKg(calc.dailyProductChlorine_g)} kg/day)</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.dailyAcid_g, 1) + " g/day (" + gramsToKg(calc.dailyAcid_g) + " kg/day)" : "0.0 g/day (0.000 kg/day)"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.dailyActiveChlorine_kg, 3)} Kg/day</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.dailyProductChlorine_kg, 3)} Kg/day</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.dailyAcid_kg, 3) + " Kg/day" : "0.000 Kg/day"}</div>
         </div>
         <div class="summary-card weekly">
           <div class="summary-title">WEEKLY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.weeklyActiveChlorine_g, 1)} g/week (${gramsToKg(calc.weeklyActiveChlorine_g)} kg/week)</div>
-          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.weeklyProductChlorine_g, 1)} g/week (${gramsToKg(calc.weeklyProductChlorine_g)} kg/week)</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.weeklyAcid_g, 1) + " g/week (" + gramsToKg(calc.weeklyAcid_g) + " kg/week)" : "0.0 g/week (0.000 kg/week)"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.weeklyActiveChlorine_kg, 3)} Kg/week</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.weeklyProductChlorine_kg, 3)} Kg/week</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.weeklyAcid_kg, 3) + " Kg/week" : "0.000 Kg/week"}</div>
         </div>
         <div class="summary-card monthly">
           <div class="summary-title">MONTHLY DEMAND</div>
-          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.monthlyActiveChlorine_g, 1)} g/month (${gramsToKg(calc.monthlyActiveChlorine_g)} kg/month)</div>
-          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.monthlyProductChlorine_g, 1)} g/month (${gramsToKg(calc.monthlyProductChlorine_g)} kg/month)</div>
-          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.monthlyAcid_g, 1) + " g/month (" + gramsToKg(calc.monthlyAcid_g) + " kg/month)" : "0.0 g/month (0.000 kg/month)"}</div>
+          <div class="summary-line"><strong>Chlorine (active):</strong> ${formatNumber(calc.monthlyActiveChlorine_kg, 3)} Kg/month</div>
+          <div class="summary-line"><strong>Brand product (${escapeHtml(calc.brand.name)}):</strong> ${formatNumber(calc.monthlyProductChlorine_kg, 3)} Kg/month</div>
+          <div class="summary-line"><strong>Pool acid (NaHSO₄):</strong> ${calc.deltaPh > 0 ? formatNumber(calc.monthlyAcid_kg, 3) + " Kg/month" : "0.000 Kg/month"}</div>
         </div>
       </div>`);
 
       const shell = document.getElementById("reportShell");
       shell.innerHTML = report.join("");
 
-      setStatus("SUMMARY PREVIEW GENERATED (POOL DETAILS + DAILY/WEEKLY/MONTHLY DEMAND).", "ok");
+      setStatus("SUMMARY PREVIEW GENERATED (POOL DETAILS + DEMAND IN Kg).", "ok");
     }
 
     function escapeHtml(str) {
@@ -843,13 +955,14 @@
 
     function exportWord() {
       const reportShell = document.getElementById("reportShell");
+      const tableCard = document.getElementById("tableCard");
       const header = `
         <html xmlns:o="urn:schemas-microsoft-com:office:office"
               xmlns:w="urn:schemas-microsoft-com:office:word"
               xmlns="http://www.w3.org/TR/REC-html40">
         <head><meta charset="utf-8"><title>SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</title></head><body>`;
       const footer = "</body></html>";
-      const sourceHTML = header + reportShell.innerHTML + footer;
+      const sourceHTML = header + reportShell.innerHTML + tableCard.outerHTML + footer;
 
       const blob = new Blob(['\ufeff', sourceHTML], { type: "application/msword" });
       const url = URL.createObjectURL(blob);
@@ -861,7 +974,7 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      setStatus("WORD DOCUMENT EXPORTED (SUMMARY ONLY).", "ok");
+      setStatus("WORD DOCUMENT EXPORTED (SUMMARY + TABLE, Kg ONLY).", "ok");
     }
 
     document.getElementById("btnCalculate").addEventListener("click", function (e) {

@@ -483,14 +483,6 @@
       box-shadow: 0 0 0 4px rgba(74,222,128,0.25);
     }
 
-    .status-text span.warn {
-      color: var(--warning);
-    }
-
-    .status-text span.err {
-      color: var(--danger);
-    }
-
     .footer-note {
       margin-top: 14px;
       font-size: 10px;
@@ -731,7 +723,6 @@
           </div>
 
           <div class="report-shell" id="reportShell">
-            <!-- Standardised report content will be injected here -->
             <h2>REPORT TITLE: SWIMMING POOL/WATER FEATURE CHLORINE &amp; PH CALCULATIONS</h2>
             <p>Click <strong>CALCULATE DOSES</strong> and then <strong>GENERATE REPORT</strong> to populate this section.</p>
           </div>
@@ -750,14 +741,14 @@
       A: {
         name: "Aquachlor",
         description: "Aquachlor – Calcium Hypochlorite 70% min. (bleaching agent, bactericide, algaecide).",
-        availableChlorineFraction: 0.70, // 70% min
+        availableChlorineFraction: 0.70,
         msdsSnippet:
           "\"Calcium Hypochlorite 70% min.\" – Aquachlor MSDS, product description: bleaching agent, bactericide, algaecide."
       },
       B: {
         name: "HTH® Dry Chlorine Granular",
         description: "HTH® DRY CHLORINE GRANULAR – Sanitizer and oxidizer, 60–80% calcium hypochlorite.",
-        availableChlorineFraction: 0.70, // mid of 60–80%
+        availableChlorineFraction: 0.70,
         msdsSnippet:
           "\"CALCIUM HYPOCHLORITE 60–80%\" – HTH® Dry Chlorine Granular MSDS, sanitizer and oxidizer."
       },
@@ -772,17 +763,11 @@
 
     const SODIUM_BISULPHATE = {
       name: "Sodium bisulphate (NaHSO₄)",
-      purityFraction: 0.92, // >92% from MSDS
+      purityFraction: 0.92,
       msdsSnippet:
         "\"NaHSO₄ content > 92%\" – Sodium bisulphate product specification sheet (swimming pools, water treatment)."
     };
 
-    // Approximate engineering rule-of-thumb:
-    // 1 ppm = 1 g/m³ of active chlorine.
-    // UAE climate factor multiplies the daily dose.
-    //
-    // For pH correction with sodium bisulphate:
-    // Approximate: 50 g NaHSO₄ per m³ per pH unit change (indicative only).
     const ACID_GRAMS_PER_M3_PER_PH = 50;
 
     // --- UI HELPERS --------------------------------------------------------------
@@ -832,7 +817,6 @@
         return volumeFromArea;
       }
 
-      // auto
       if (!isNaN(volumeInput) && volumeInput > 0) {
         return volumeInput;
       }
@@ -865,8 +849,7 @@
         return null;
       }
 
-      // Chlorine calculations
-      const dailyActiveChlorine_g = volumeM3 * targetCl * uaeFactor; // g/day active
+      const dailyActiveChlorine_g = volumeM3 * targetCl * uaeFactor;
       const dailyProductChlorine_g = dailyActiveChlorine_g / brand.availableChlorineFraction;
 
       const weeklyActiveChlorine_g = dailyActiveChlorine_g * 7;
@@ -875,7 +858,6 @@
       const monthlyActiveChlorine_g = dailyActiveChlorine_g * 30;
       const monthlyProductChlorine_g = dailyProductChlorine_g * 30;
 
-      // pH / acid calculations
       let deltaPh = 0;
       if (!isNaN(currentPh) && !isNaN(targetPh)) {
         deltaPh = currentPh - targetPh;
@@ -887,13 +869,11 @@
 
       if (deltaPh > 0) {
         const totalAcid_g = volumeM3 * deltaPh * ACID_GRAMS_PER_M3_PER_PH;
-        // Assume we distribute the correction over 7 days for smoother operation
         dailyAcid_g = totalAcid_g / 7;
         weeklyAcid_g = totalAcid_g;
         monthlyAcid_g = (totalAcid_g / 7) * 30;
       }
 
-      // Update metric pills
       document.getElementById("metricVolume").textContent = formatNumber(volumeM3, 2) + " m³";
       document.getElementById("metricDailyCl").textContent = formatNumber(dailyActiveChlorine_g, 1) + " g";
       document.getElementById("metricDailyAcid").textContent = deltaPh > 0
@@ -965,6 +945,60 @@
       report.push(`<p>${escapeHtml(calc.brand.msdsSnippet)}</p>`);
       report.push(`<p>${escapeHtml(SODIUM_BISULPHATE.msdsSnippet)}</p>`);
 
+      // CALCULATION BASIS
+      report.push(`<h3>CALCULATION BASIS</h3>`);
+      report.push(`
+        <p><strong>1. CHLORINE DOSE (ACTIVE CHLORINE)</strong></p>
+        <ul>
+          <li>Effective pool volume, V = ${formatNumber(calc.volumeM3, 2)} m³</li>
+          <li>Target free chlorine, C<sub>target</sub> = ${formatNumber(calc.targetCl, 2)} ppm</li>
+          <li>UAE climate factor, F<sub>UAE</sub> = ${formatNumber(calc.uaeFactor, 2)}</li>
+          <li>Available chlorine fraction of product, f<sub>Cl</sub> = ${formatNumber(calc.brand.availableChlorineFraction, 2)}</li>
+        </ul>
+        <p>Engineering assumption: 1 ppm ≈ 1 g/m³ of active chlorine.</p>
+        <p>Daily active chlorine mass:</p>
+        <p>
+          Daily Cl (g/day) = V × C<sub>target</sub> × F<sub>UAE</sub><br/>
+          = ${formatNumber(calc.volumeM3, 2)} × ${formatNumber(calc.targetCl, 2)} × ${formatNumber(calc.uaeFactor, 2)}<br/>
+          = <strong>${formatNumber(calc.dailyActiveChlorine_g, 1)} g/day</strong>
+        </p>
+        <p>Daily product mass (${escapeHtml(calc.brand.name)}):</p>
+        <p>
+          Product (g/day) = Daily Cl / f<sub>Cl</sub><br/>
+          = ${formatNumber(calc.dailyActiveChlorine_g, 1)} / ${formatNumber(calc.brand.availableChlorineFraction, 2)}<br/>
+          = <strong>${formatNumber(calc.dailyProductChlorine_g, 1)} g/day</strong>
+        </p>
+      `);
+
+      if (calc.deltaPh > 0) {
+        report.push(`
+          <p><strong>2. PH REDUCTION (SODIUM BISULPHATE)</strong></p>
+          <ul>
+            <li>Current pH, pH<sub>current</sub> = ${formatNumber(calc.currentPh, 2)}</li>
+            <li>Target pH, pH<sub>target</sub> = ${formatNumber(calc.targetPh, 2)}</li>
+            <li>Required reduction, ΔpH = pH<sub>current</sub> − pH<sub>target</sub> = ${formatNumber(calc.deltaPh, 2)}</li>
+            <li>Indicative dose: ${ACID_GRAMS_PER_M3_PER_PH} g NaHSO₄/m³ per pH unit</li>
+          </ul>
+          <p>Total sodium bisulphate mass:</p>
+          <p>
+            m<sub>acid,total</sub> (g) = V × ΔpH × ${ACID_GRAMS_PER_M3_PER_PH}<br/>
+            = ${formatNumber(calc.volumeM3, 2)} × ${formatNumber(calc.deltaPh, 2)} × ${ACID_GRAMS_PER_M3_PER_PH}<br/>
+            = <strong>${formatNumber(calc.weeklyAcid_g, 1)} g</strong> (applied over one week)
+          </p>
+          <p>Distributed daily acid dose:</p>
+          <p>
+            m<sub>acid,daily</sub> (g/day) = m<sub>acid,total</sub> / 7<br/>
+            = ${formatNumber(calc.weeklyAcid_g, 1)} / 7<br/>
+            = <strong>${formatNumber(calc.dailyAcid_g, 1)} g/day</strong>
+          </p>
+        `);
+      } else {
+        report.push(`
+          <p><strong>2. PH REDUCTION (SODIUM BISULPHATE)</strong></p>
+          <p>No downward pH correction is required because pH<sub>current</sub> ≤ pH<sub>target</sub>.</p>
+        `);
+      }
+
       // DAILY CHLORINE REQUIREMENT
       report.push(`<h3>DAILY CHLORINE REQUIREMENT</h3>`);
       report.push(`<p>Daily active chlorine dose (as available chlorine): <strong>${formatNumber(calc.dailyActiveChlorine_g, 1)} g/day</strong>.</p>`);
@@ -1005,7 +1039,7 @@
         report.push(`<p>No monthly sodium bisulphate requirement calculated (pH already at or below target).</p>`);
       }
 
-      // HTH REQUIREMENT (CALCIUM HYPOCHLORITE) – GENERIC SECTION
+      // HTH REQUIREMENT (CALCIUM HYPOCHLORITE)
       report.push(`<h3>HTH REQUIREMENT (CALCIUM HYPOCHLORITE)</h3>`);
       report.push(`<p>For reference, if HTH® Dry Chlorine Granular (60–80% calcium hypochlorite) is used, the equivalent product mass can be estimated using an assumed 70% available chlorine content.</p>`);
       const hthFraction = CHLORINE_BRANDS.B.availableChlorineFraction;
@@ -1059,7 +1093,6 @@
     }
 
     function exportPdf() {
-      // Simple approach: rely on browser print-to-PDF.
       setStatus("USE THE BROWSER PRINT DIALOG TO SAVE AS PDF.", "warn");
       window.print();
     }
@@ -1090,7 +1123,6 @@
       setStatus("WORD DOCUMENT EXPORTED (STANDARDISED REPORT FORMAT).", "ok");
     }
 
-    // --- EVENT BINDINGS ----------------------------------------------------------
     document.getElementById("btnCalculate").addEventListener("click", function (e) {
       e.preventDefault();
       calculateDoses();
@@ -1111,7 +1143,6 @@
       exportWord();
     });
 
-    // Toggle radio pill active state
     document.querySelectorAll(".radio-pill input").forEach(function (input) {
       input.addEventListener("change", function () {
         document.querySelectorAll(".radio-pill").forEach(function (pill) {
@@ -1122,7 +1153,6 @@
       });
     });
 
-    // Initial status
     setStatus("READY · ENTER DATA AND CLICK “CALCULATE DOSES”.", "ok");
   </script>
 </body>

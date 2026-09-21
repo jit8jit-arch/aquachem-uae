@@ -32,9 +32,17 @@
 </div>
 <div id="panelPh" role="tabpanel" aria-labelledby="tabPh" class="stack" hidden>
 <div class="row"><div class="field"><label for="currentPh">Current pH</label><input id="currentPh" type="number" min="6" max="9" step="any" inputmode="decimal" placeholder="Measured value"></div><div class="field"><label for="targetPh">Required pH</label><input id="targetPh" type="number" min="7.2" max="7.8" step="any" inputmode="decimal" value="7.4"></div></div>
-<div class="field"><label for="phProduct">pH product / Pool Acid</label><select id="phProduct"><option value="bayrolMinus">Pool Acid · Sodium Bisulphate · BAYROL reference</option><option value="poolAcid">Pool Acid · Sodium Bisulphate · your label rate</option><option value="bayrolPlus">BAYROL pH-Plus · raise pH</option><option value="customMinus">Other pH decreaser · your label rate</option><option value="customPlus">General brand · raise pH</option></select><small id="phProductNote">Sodium bisulphate dry Pool Acid. BAYROL reference: 100 g per 10 m³ for a 0.1 pH decrease. Use your pack’s label rate if different.</small></div>
+<div class="field"><label for="phProduct">pH product / Pool Acid</label><select id="phProduct"><option value="aquaPlus">AQUA PLUS · Sodium Bisulphate · 25 kg bag</option><option value="poolAcid">General Pool Acid · Sodium Bisulphate</option><option value="bayrolMinus">Pool Acid · Sodium Bisulphate · BAYROL pH-Minus</option><option value="bayrolPlus">BAYROL pH-Plus · raise pH</option><option value="customMinus">Other pH decreaser · your label rate</option><option value="customPlus">General brand · raise pH</option></select><small id="phProductNote"></small></div>
+<div class="field"><label for="phMethod">Calculation method</label><select id="phMethod"><option value="acidDemand">Water test · acid-demand chart</option><option value="label">Simple label guide · rough estimate</option></select><small id="phMethodNote"></small></div>
+<div id="acidDemandFields" class="stack">
+<div class="row"><div class="field"><label for="acidTestStart">Test starting pH</label><input id="acidTestStart" type="number" min="6" max="9" step="any" inputmode="decimal" placeholder="Fresh sample reading"></div><div class="field"><label for="acidTestEnd">Test endpoint pH</label><input id="acidTestEnd" type="number" min="7.2" max="7.8" step="any" inputmode="decimal" placeholder="Match required pH"></div></div>
+<div class="row"><div class="field"><label for="acidChartDose">Dry-acid dose from chart (g)</label><input id="acidChartDose" type="number" min="0.001" step="any" inputmode="decimal" placeholder="For your test result"><small>Use the sodium bisulphate column; convert kg to g (× 1,000).</small></div><div class="field"><label for="acidChartVolume">Chart pool volume (m³)</label><input id="acidChartVolume" type="number" min="0.001" step="any" inputmode="decimal" placeholder="Volume for that chart dose"><small>The chart’s pool volume, not the water sample volume. Litres ÷ 1,000 = m³.</small></div></div>
+<div class="row"><div class="field"><label for="acidChartStrength">Chart NaHSO₄ strength (%)</label><input id="acidChartStrength" type="number" min="0.001" max="100" step="any" inputmode="decimal" placeholder="From kit instructions"></div><div class="field"><label for="acidProductStrength">Your Pool Acid strength (%)</label><input id="acidProductStrength" type="number" min="0.001" max="100" step="any" inputmode="decimal" placeholder="From bag / supplier"></div></div>
+<small>Both strengths must be % by mass expressed as NaHSO₄ on the same basis. Do not substitute another acid, a monohydrate percentage, or chlorine strength. If either strength is unknown, obtain it from the supplier.</small>
+<div class="field"><label for="acidTestSource">Test kit / chart reference (optional)</label><input id="acidTestSource" maxlength="150" placeholder="Kit name, chart edition and test date"></div>
+</div>
 <div id="phCustom" class="row" hidden><div class="field"><label for="phRate">Label dose / 10 m³ / 0.1 pH</label><input id="phRate" type="number" min="0.001" step="any" inputmode="decimal" placeholder="From your product label"></div><div class="field"><label for="phUnit">Dose unit</label><select id="phUnit"><option value="g">Grams (solid)</option><option value="mL">Millilitres (liquid)</option></select></div></div>
-<small>pH cannot be dosed exactly from volume and pH alone. These are label-based estimates; test acid/base demand for your water.</small>
+<small>pH is logarithmic. Buffering controls acid demand, so volume and pH alone do not determine an exact dose. Test again after treatment; do not reuse an earlier water sample result.</small>
 </div>
 <details id="strengthDetails" class="subdetails"><summary>Product strength & free chlorine details</summary><div class="subbody stack">
 <div class="field"><label for="customName">Product name (optional)</label><input id="customName" maxlength="100" placeholder="Name on your product label"></div>
@@ -60,10 +68,11 @@
 <section class="advsection wide"><h3>Water balance</h3><p class="muted">Enter measured values for reference checks. Blank means untested. These checks do not certify swimming safety or calculate acid demand.</p><div class="row three"><div class="field"><label for="alkalinity">Total alkalinity (ppm as CaCO₃)</label><input id="alkalinity" type="number" min="0" max="1000" step="any" inputmode="decimal" placeholder="Enter measurement"></div><div class="field"><label for="hardness">Calcium hardness (ppm as CaCO₃)</label><input id="hardness" type="number" min="0" max="2000" step="any" inputmode="decimal" placeholder="Enter measurement"></div><div class="field"><label for="cya">Cyanuric acid / stabilizer (ppm)</label><input id="cya" type="number" min="0" max="500" step="any" inputmode="decimal" placeholder="Enter measurement"></div></div><div id="balanceResults" class="balancecards"></div></section>
 <section class="advsection"><h3>Ongoing chlorine planning</h3><div class="field"><label for="dailyLoss">Measured daily chlorine loss (ppm/day)</label><input id="dailyLoss" type="number" min="0" max="20" step="any" inputmode="decimal" placeholder="Optional: from your operating log"></div><small>Heat, sunlight and use change demand. Enter measured loss; there is no fixed Dubai dose multiplier. Forecast excludes today's correction.</small><div id="forecast"></div></section>
 <section class="advsection"><h3>Report details</h3><div class="stack"><div class="field"><label for="projectName">Project / pool name</label><input id="projectName" maxlength="100" placeholder="e.g. Main swimming pool"></div><div class="row"><div class="field"><label for="projectRef">Reference</label><input id="projectRef" maxlength="60" placeholder="e.g. POOL-01"></div><div class="field"><label for="location">Location</label><input id="location" maxlength="100" value="Dubai, UAE"></div></div></div></section>
-<section class="advsection wide"><h3>Saved settings</h3><div class="exports"><button id="saveBtn" type="button">Save on this device</button><button id="loadBtn" type="button">Load saved</button><button id="jsonBtn" type="button">Export settings</button><button id="importBtn" type="button">Import settings</button><button id="resetBtn" type="button">Reset</button></div><input id="jsonFile" type="file" accept=".json,application/json" hidden><small>Settings remain in this browser when available. File export is the portable backup. Loading settings restores old readings; retest before dosing.</small></section>
-<section class="advsection wide sources"><h3>Method, product notes & sources</h3><div class="sourcecode">Chlorine: available chlorine needed (g) = volume (m³) × max(target − current, 0) (ppm).<br>Solid product (g) = available chlorine needed ÷ (available chlorine % / 100).<br>Liquid product (L) = available chlorine needed (g) ÷ available chlorine concentration (g/L).<br>pH estimate = product label dose per 10 m³ per 0.1 pH × (volume / 10) × (|target − current| / 0.1).</div><p>Chlorine results are theoretical additions with no allowance for immediate chlorine demand or product ageing. Retest after circulation. Product brands determine concentration, not the water's target. For liquids, % by weight requires density; sodium hypochlorite % is converted to available chlorine using 70.906 / 74.442. For solids, enter available chlorine %, not ingredient purity.</p><p>pH is logarithmic and water buffering matters. Label rates are estimates, not a universal acid-demand model. The 1.0 pH reference is only a linear label-rate comparison; never use it as a single treatment instruction. General-brand rates must come from the actual label or a water-specific demand test. An entered alkalinity reading is reported but does not mathematically adjust these label estimates.</p><p>Defaults: warm outdoor public/shared pool, 30°C assumed, stabilizer present, target free chlorine 4 ppm and pH 7.4. Verify the profile before use. Dubai public-pool guidance changes chlorine minima with temperature and stabilizer; private-pool guidance is different. Custom/water-feature targets must be set by the responsible operator. Not for emergency disinfection or automatic dosing control.</p><ul><li><a href="https://www.dm.gov.ae/documents/hsd-gu81/" target="_blank" rel="noopener">Dubai Municipality: Public Swimming Pools Safety Guidelines v3, 2024</a> — section 4-16, Table 5 and notes, pp. 30–31.</li><li><a href="https://www.dm.gov.ae/documents/hsd-gu80/" target="_blank" rel="noopener">Dubai Municipality: Private Swimming Pools Safety Guidelines v1</a> — water-quality tables.</li><li><a href="https://hth-pool.com/en/products/granular-5kg/" target="_blank" rel="noopener">HTH Granular</a> — minimum chlorine 68%. Other legacy brand presets are carried over from the supplied app and must be confirmed against your pack.</li><li><a href="https://www.bayrol.com/products/manual-treatment/ph-minus" target="_blank" rel="noopener">BAYROL pH-Minus</a> and <a href="https://www.bayrol.com/products/manual-treatment/ph-plus" target="_blank" rel="noopener">BAYROL pH-Plus</a> — label dose references.</li></ul><small>References checked 20 September 2026. Follow the current product label, facility procedure and applicable local requirements.</small></section>
+<section class="advsection wide"><h3>Saved settings</h3><div class="exports"><button id="saveBtn" type="button">Save on this device</button><button id="loadBtn" type="button">Load saved</button><button id="jsonBtn" type="button">Export settings</button><button id="importBtn" type="button">Import settings</button><button id="resetBtn" type="button">Reset</button></div><input id="jsonFile" type="file" accept=".json,application/json" hidden><small>Settings remain in this browser when available. File export is the portable backup. Loading settings restores old readings but clears acid-demand sample results. Enter a fresh test before dosing.</small></section>
+<section class="advsection wide sources" aria-labelledby="acidMsdsHeading"><h3 id="acidMsdsHeading">Pool Acid: sample MSDS reference</h3><p>The supplied PVS document identifies the same chemical. Its specification is a reference limit, not an exact strength for your bag.</p><div id="acidMsdsReference"></div></section>
+<section class="advsection wide sources"><h3>Method, product notes & sources</h3><div class="sourcecode">Chlorine: available chlorine needed (g) = volume (m³) × max(target − current, 0) (ppm).<br>Solid product (g) = available chlorine needed ÷ (available chlorine % / 100).<br>Liquid product (L) = available chlorine needed (g) ÷ available chlorine concentration (g/L).<br>Pool Acid from a water test (g) = test chart dry-acid dose (g) × (pool volume / chart pool volume) × (chart NaHSO₄ % / product NaHSO₄ %). Both volumes in m³; strengths on the same mass basis. No further pH multiplier.<br>Alternative rough label guide = label dose per 10 m³ per 0.1 pH × (volume / 10) × (|target − current| / 0.1).</div><p>Chlorine results are theoretical additions with no allowance for immediate chlorine demand or product ageing. Retest after circulation. Product brands determine concentration, not the water's target. For liquids, % by weight requires density; sodium hypochlorite % is converted to available chlorine using 70.906 / 74.442. For solids, enter available chlorine %, not ingredient purity.</p><p>pH is logarithmic and water buffering matters. There is no fixed acid dose per 1.0 pH drop. The default Pool Acid method scales the result of a fresh acid-demand test to its specific endpoint. Use your kit’s sodium bisulphate chart with its specified sample size and reagent; no generic drop conversion is built in. The chart already accounts for the tested pH change, so do not multiply by that change again. Strength correction applies only to matching NaHSO₄ mass percentages, not other acids or different hydrate bases. The optional simple label guide is an approximation, not measured acid demand. Recorded alkalinity does not mathematically modify either method; no carbonate-only model or assumed alkalinity is used. Follow product and test-kit batch limits, circulate and retest.</p><p>Defaults: warm outdoor public/shared pool, 30°C assumed, stabilizer present, target free chlorine 4 ppm and pH 7.4. Verify the profile before use. Dubai public-pool guidance changes chlorine minima with temperature and stabilizer; private-pool guidance is different. Custom/water-feature targets must be set by the responsible operator. Not for emergency disinfection or automatic dosing control.</p><ul><li><a href="https://www.dm.gov.ae/documents/hsd-gu81/" target="_blank" rel="noopener">Dubai Municipality: Public Swimming Pools Safety Guidelines v3, 2024</a> — section 4-16, Table 5 and notes, pp. 30–31.</li><li><a href="https://www.dm.gov.ae/documents/hsd-gu80/" target="_blank" rel="noopener">Dubai Municipality: Private Swimming Pools Safety Guidelines v1</a> — water-quality tables.</li><li><a href="https://hth-pool.com/en/products/granular-5kg/" target="_blank" rel="noopener">HTH Granular</a> — minimum chlorine 68%. Other legacy brand presets are carried over from the supplied app and must be confirmed against your pack.</li><li><a href="https://www.bayrol.com/products/manual-treatment/ph-minus" target="_blank" rel="noopener">BAYROL pH-Minus</a> and <a href="https://www.bayrol.com/products/manual-treatment/ph-plus" target="_blank" rel="noopener">BAYROL pH-Plus</a> — label dose references.</li><li><a href="https://www.usgs.gov/water-science-school/science/alkalinity-and-water" target="_blank" rel="noopener">USGS: Alkalinity and Water</a> — why buffering changes the response to acid.</li><li><a href="https://taylortechnologies.com/products/complete%E2%84%A2-kit-for-chlorine-bromine-ph-alkalinity-hardness-cya-dpd-high-range-75-oz-bottles" target="_blank" rel="noopener">Taylor Complete Test Kit</a> — pH with acid/base-demand testing to a desired pH.</li></ul><small>Pool Acid method reviewed 21 September 2026; other references checked 20 September 2026. Follow the current product label, facility procedure and applicable local requirements.</small></section>
 </div></div></details>
-<footer class="footer"><span>POOLWISE · Pool & water feature calculations</span><span>Local calculations · No account needed · Version 2.0</span></footer>
+<footer class="footer"><span>POOLWISE · Pool & water feature calculations</span><span>Local calculations · No account needed · Version 2.1.2</span></footer>
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <noscript><p>This calculator needs JavaScript enabled in your browser.</p></noscript>
@@ -23233,15 +23242,26 @@ const brands = {
  custom:{name:'Custom chlorine product', strength:70, form:'solid', note:'Enter the product form and label concentration below. No brand strength is assumed.'}
 };
 const phProducts = {
- bayrolMinus:{name:'Pool Acid — Sodium Bisulphate (NaHSO₄), BAYROL pH-Minus reference', direction:-1, rate:100, unit:'g'},
- poolAcid:{name:'Pool Acid — Sodium Bisulphate (NaHSO₄), your label rate', direction:-1, unit:'g'},
+ aquaPlus:{name:'AQUA PLUS Pool Acid — Sodium Bisulphate (NaHSO₄), 25 kg bag', direction:-1, unit:'g', dryAcid:true, cas:'7681-38-1', pack:'25 kg net', labelNote:'Photo-identified bag: filled for AQUA PLUS; sodium bisulphate / sodium hydrogen sulphate, CAS 7681-38-1; 25 kg net; marked food grade E514(ii). The photos do not state strength (%) or a pool dosing rate. Obtain these from the supplier’s certificate of analysis / technical sheet. Food grade and the CAS number are not a purity percentage.'},
+ bayrolMinus:{name:'Pool Acid — Sodium Bisulphate (NaHSO₄), BAYROL pH-Minus', direction:-1, rate:100, unit:'g', dryAcid:true},
+ poolAcid:{name:'Pool Acid — Sodium Bisulphate (NaHSO₄), your product', direction:-1, unit:'g', dryAcid:true},
  bayrolPlus:{name:'BAYROL pH-Plus', direction:1, rate:100, unit:'g'},
  customMinus:{name:'General brand pH decreaser', direction:-1},
  customPlus:{name:'General brand pH increaser', direction:1}
 };
+// Reference evidence only. A specification limit must not become an exact
+// product assay or be transferred to a different brand's calculation.
+const acidMsdsReference=[
+ ['Source','User-supplied sample: pool acid(pvs)msds.pdf; PVS Chemicals Belgium.'],
+ ['Chemical identity','Sodium bisulphate / sodium hydrogen sulphate, NaHSO₄; CAS 7681-38-1.'],
+ ['Stated concentration','Greater than 92% (>92), not an exact 92% assay. MSDS section 2, page 1; Product Specification Sheet, page 6.'],
+ ['Document dates','MSDS: 24 April 2007, version 5. Attached product specification: 24 September 2007. Historical sample; confirm current product documentation.'],
+ ['Dosing information','No pool dosing table or acid-demand conversion is supplied. Section 9 lists pH 1.3 for a 1.2% solution; this is a product property, not a pool target or dose.'],
+ ['Use in this app','Reference only. The sample is not established as the specification for the photographed AQUA PLUS bag. It does not fill or change the product strength, label rate or dose. Use the actual product assay and a water-specific test or its dosing instructions.']
+];
 let activeTab='cl', last=null, toastTimer;
 let lastVolumeUnit='m3';
-const settingIds=['volume','volumeUnit','currentCl','targetCl','brand','customName','productForm','strength','liquidBasis','density','showFree','totalCl','currentPh','targetPh','phProduct','phRate','phUnit','profile','temperature','stabilized','shape','length','width','avgDepth','alkalinity','hardness','cya','dailyLoss','projectName','projectRef','location'];
+const settingIds=['volume','volumeUnit','currentCl','targetCl','brand','customName','productForm','strength','liquidBasis','density','showFree','totalCl','currentPh','targetPh','phProduct','phMethod','phRate','phUnit','acidTestStart','acidTestEnd','acidChartDose','acidChartVolume','acidChartStrength','acidProductStrength','acidTestSource','profile','temperature','stabilized','shape','length','width','avgDepth','alkalinity','hardness','cya','dailyLoss','projectName','projectRef','location'];
 const initialSettings=Object.fromEntries(settingIds.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]));
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,6500);}
 function measure(v, unit='g'){
@@ -23279,12 +23299,32 @@ function calculatePh(v){
  const current=validation('currentPh',6,9,errors,'Current pH (routine adjustment range)');
  const target=validation('targetPh',7.2,7.8,errors,'Required pH');
  const product={...phProducts[$('phProduct').value]};
- if(!product.rate){product.rate=validation('phRate',0.001,100000,errors,'Product label rate');product.unit=product.unit||$('phUnit').value;}
+ product.unit=product.unit||$('phUnit').value;
+ const method=$('phMethod').value;
  const delta=target-current;
  if(Number.isFinite(delta)&&Math.abs(delta)>1e-9&&Math.sign(delta)!==product.direction)errors.push({id:'phProduct',message:`Select a pH ${delta<0?'lowering':'raising'} product for these readings.`});
- if(Math.abs(delta)>1)errors.push({id:'currentPh',message:'A change over 1.0 pH needs an acid/base-demand test and operator review. No routine dose estimated.'});
- const perPoint=product.rate*v;
- return {ok:errors.length===0,errors,current,target,delta,product,dose:perPoint*Math.abs(delta),perPoint,firstStep:perPoint*Math.min(Math.abs(delta),0.1)};
+ if(Math.abs(delta)>1+1e-9)errors.push({id:'currentPh',message:'A change over 1.0 pH is outside this routine calculator. Ask the responsible operator to review the water.'});
+ let dose=NaN,demand=null;
+ if(Number.isFinite(delta)&&Math.abs(delta)<1e-9)dose=0;
+ else if(method==='acidDemand'){
+  if(!product.dryAcid)errors.push({id:'phMethod',message:'This test calculation is only for sodium bisulphate dry acid. Use the matching product or its label guide.'});
+  const start=validation('acidTestStart',6,9,errors,'Test starting pH'),end=validation('acidTestEnd',7.2,7.8,errors,'Test endpoint pH');
+  const chartDose=validation('acidChartDose',0.001,1000000000,errors,'Dry-acid mass from your test chart (g)');
+  const chartVolume=validation('acidChartVolume',0.001,1000000,errors,'Test chart reference pool volume (m³)');
+  const chartStrength=validation('acidChartStrength',0.001,100,errors,'Test chart NaHSO₄ strength (%)');
+  const productStrength=validation('acidProductStrength',0.001,100,errors,'Your Pool Acid NaHSO₄ strength (%)');
+  if(Number.isFinite(start)&&Number.isFinite(current)&&Math.abs(start-current)>1e-9)errors.push({id:'acidTestStart',message:'The test starting pH must match Current pH. Use a fresh test for changed water readings.'});
+  if(Number.isFinite(end)&&Number.isFinite(target)&&Math.abs(end-target)>1e-9)errors.push({id:'acidTestEnd',message:'The test endpoint must match Required pH. Test to the new endpoint; do not scale by the pH difference.'});
+  demand={start,end,chartDose,chartVolume,chartStrength,productStrength,source:$('acidTestSource').value.trim()};
+  // The chart already represents this water's tested pH endpoint. Do NOT
+  // multiply by pH change or assume a universal grams-per-drop conversion.
+  dose=chartDose*(v/chartVolume)*(chartStrength/productStrength);
+ }else{
+  if(!product.rate)product.rate=validation('phRate',0.001,100000,errors,'Product label rate');
+  // A manufacturer label guide only; not a chemical acid-demand model.
+  dose=product.rate*(v/10)*(Math.abs(delta)/0.1);
+ }
+ return {ok:errors.length===0,errors,current,target,delta,product,method,demand,dose};
 }
 function profileData(){
  const id=$('profile').value,t=num('temperature'),cya=$('stabilized').value==='yes';
@@ -23310,8 +23350,7 @@ function getWarnings(c,p,d){
   if(c.current>10)warnings.push('Free chlorine exceeds the Dubai public-pool maximum reference of 10 ppm. Keep the pool out of service and follow the site procedure.');
  }
  if(activeTab==='ph'&&p.ok){
-  warnings.push('pH dose is an estimate from the product label. Alkalinity and buffering change the actual demand. Use small label-approved steps, circulate, then retest; do not add the whole estimate at once.');
-  if(p.product.direction<0&&p.current-1<7.2)warnings.push('The 1.0 pH drop shown below is a comparison only and would put this reading below 7.2. It is not a dosing instruction.');
+  if(Math.abs(p.delta)>1e-9)warnings.push(p.method==='acidDemand'?'This estimate scales your current water sample’s acid-demand chart result. Check the chart is for sodium bisulphate and use matching NaHSO₄ mass percentages. Follow product and test-kit batch limits; circulate and retest before further dosing.':'Rough label guide only: this is not a measured acid/base demand. Alkalinity and other buffers change the actual amount needed. Follow the label’s batch limits, circulate and retest; do not assume this total will reach the target.');
   if(d.phMin!==null&&(p.target<d.phMin||p.target>d.phMax))warnings.push(`Your pH target is outside this profile’s reference band (${d.phMin}–${d.phMax}).`);
  }
  if(d.id!=='custom'&&d.id!=='private'&&d.t>30)warnings.push('Water is above 30°C. Confirm the operating limits for this pool type; the normal warm-pool preset does not cover spa operation.');
@@ -23332,9 +23371,12 @@ function syncControls(){
  $('strength').max=gl?'500':'100';
  $('totalClField').hidden=!$('showFree').checked;
  $('brandNote').textContent=brands[$('brand').value].note;
- const pp=phProducts[$('phProduct').value];$('phCustom').hidden=!!pp.rate;
- const dryPoolAcid=$('phProduct').value==='poolAcid';$('phUnit').disabled=dryPoolAcid;if(dryPoolAcid)$('phUnit').value='g';
- $('phProductNote').textContent=$('phProduct').value==='bayrolMinus'?'Sodium bisulphate dry Pool Acid. BAYROL label reference: 100 g per 10 m³ for a 0.1 pH decrease. If your pack has a different dose, choose “your label rate”.':dryPoolAcid?'Dry Pool Acid (sodium bisulphate / sodium bisulfate, NaHSO₄) lowers pH. Enter your pack’s dose in grams per 10 m³ per 0.1 pH; no universal rate is assumed.':pp.rate?`Label estimate: ${pp.rate} ${pp.unit} per 10 m³ for a 0.1 pH ${pp.direction<0?'decrease':'increase'}.`:'Enter your own label rate. Match the exact product and concentration; no generic acid strength is assumed.';
+ const pp=phProducts[$('phProduct').value],tested=$('phMethod').value==='acidDemand';
+ $('phMethod').querySelector('[value="acidDemand"]').disabled=!pp.dryAcid;
+ $('phCustom').hidden=tested||!!pp.rate;$('acidDemandFields').hidden=!tested;
+ $('phUnit').disabled=!!pp.dryAcid;if(pp.dryAcid)$('phUnit').value='g';
+ $('phProductNote').textContent=pp.labelNote||($('phProduct').value==='bayrolMinus'?'BAYROL pH-Minus contains sodium bisulphate. Its label guide is 100 g per 10 m³ per 0.1 pH decrease; this is not a universal rate for other brands or water.':pp.dryAcid?'Dry Pool Acid: sodium bisulphate / sodium bisulfate, NaHSO₄. Product strength and dose are not assumed. It lowers pH and also reduces total alkalinity.':pp.rate?`Label guide: ${pp.rate} ${pp.unit} per 10 m³ for a 0.1 pH ${pp.direction<0?'decrease':'increase'}.`:'Enter your own label rate. Match the exact product and concentration.');
+ $('phMethodNote').textContent=tested?'Use an acid-demand kit on a fresh sample, to your required pH. Enter the resulting sodium bisulphate dose from that kit’s chart. This is not the quantity of test reagent, a drop count, or an alkalinity titration to pH 4.5.':'Simple label guide only. Volume and pH alone cannot determine acid demand. Use this only when your exact product label supplies this rate; a large pH change is not reliably linear.';
  const shape=$('shape').value;$('widthField').hidden=shape!=='rectangle';
  $('lengthLabel').textContent=shape==='round'?'Diameter (m)':shape==='area'?'Surface area (m²)':'Length (m)';
 }
@@ -23356,28 +23398,27 @@ function update(showErrors=false){
  $('profileNote').textContent=profileText(d);$('profileTag').textContent=d.name;$('profileAdvice').textContent=profileText(d)+' Targets change only when you press Apply suggested targets.';
  $('applyDefaults').disabled=d.id==='custom'||!d.valid;
  $('resultHeading').textContent=activeTab==='cl'?'CHLORINE TO ADD':'ESTIMATED pH PRODUCT';
- $('resultType').textContent=activeTab==='cl'?'ONE-TIME CORRECTION':'LABEL-BASED ESTIMATE';
+ $('resultType').textContent=activeTab==='cl'?'ONE-TIME CORRECTION':Math.abs(p.delta)<1e-9?'NO ADJUSTMENT NEEDED':p.method==='acidDemand'?'FROM YOUR WATER TEST':'ROUGH LABEL GUIDE';
  $('currentDisplay').textContent=Number.isFinite(r.current)?fmt(r.current,2):'—';$('targetDisplay').textContent=Number.isFinite(r.target)?fmt(r.target,2):'—';$('currentUnit').textContent=unit;$('targetUnit').textContent=unit;
  const scaleMin=activeTab==='cl'?0:6,scaleMax=activeTab==='cl'?Math.max(10,c.current||0,c.target||0):9;
  const pct=n=>Number.isFinite(n)?Math.max(0,Math.min(100,(n-scaleMin)/(scaleMax-scaleMin)*100)):0;
  $('gaugeFill').style.width=pct(r.current)+'%';$('gaugePin').style.left=pct(r.target)+'%';$('scaleMin').textContent=scaleMin+' '+unit;$('scaleMax').textContent=fmt(scaleMax)+' '+unit;
- $('refLabel').textContent=activeTab==='cl'?'TO RAISE CHLORINE BY 1 ppm':'TO LOWER pH BY 1.0 · REFERENCE';
- $('refNote').textContent=activeTab==='cl'?'For this pool and selected product.':'Linear label-rate comparison only. Not a single treatment dose.';
+ $('refLabel').textContent=activeTab==='cl'?'TO RAISE CHLORINE BY 1 ppm':'ACID FOR A 1.0 pH DROP';
+ $('refNote').textContent=activeTab==='cl'?'For this pool and selected product.':'No universal quantity. Test demand to that specific endpoint; do not extrapolate another pH change.';
  $('changeLabel').textContent=activeTab==='cl'?'CHLORINE INCREASE NEEDED':'pH CHANGE NEEDED';
  document.querySelectorAll('[aria-invalid]').forEach(e=>e.removeAttribute('aria-invalid'));
  if(r.ok){
   const amount=measure(r.dose,r.product.unit);$('doseValue').textContent=amount.value;$('doseUnit').textContent=amount.unit;
   $('resultProduct').textContent=r.product.name+(activeTab==='cl'?' · '+c.product.description:'');
-  $('resultCaption').textContent=activeTab==='cl'?(c.delta>0?`${doseText(c.active)} available chlorine needed. Theoretical addition; retest after circulation.`:'No chlorine addition needed at this target.'):(Math.abs(p.delta)<1e-9?'Your reading matches the target. No pH product needed.':`Estimated total to ${p.delta<0?'lower':'raise'} pH. First 0.1-step reference: ${doseText(p.firstStep,p.product.unit)} or less if the label requires.`);
-  $('refDose').textContent=activeTab==='cl'?doseText(c.perPpm,c.product.unit):(p.product.direction<0?doseText(p.perPoint,p.product.unit):'Select Pool Acid');
-  if(activeTab==='ph'&&p.product.direction>0)$('refNote').textContent='A lowering product is needed for this reference. Raising and lowering doses are not interchangeable.';
+  $('resultCaption').textContent=activeTab==='cl'?(c.delta>0?`${doseText(c.active)} available chlorine needed. Theoretical addition; retest after circulation.`:'No chlorine addition needed at this target.'):(Math.abs(p.delta)<1e-9?'Your reading matches the target. No pH product needed.':p.method==='acidDemand'?`Test-chart estimate for ${fmt(p.current)} → ${fmt(p.target)} pH, scaled to this pool and product strength. Follow label and test-kit batch limits; retest.`:'Rough total from the selected label rate. The actual dose depends on this water’s buffering. Follow label batch limits and retest.');
+  $('refDose').textContent=activeTab==='cl'?doseText(c.perPpm,c.product.unit):'No fixed dose';
   $('changeValue').textContent=activeTab==='cl'?fmt(c.delta,3)+' ppm':(p.delta<0?'−':p.delta>0?'+':'')+fmt(Math.abs(p.delta),3)+' pH';
   $('changeNote').textContent=activeTab==='cl'?'Only the difference is calculated.':'Adjust in small steps, then measure again.';
   $('inputStatus').textContent='Calculation updated. Confirm the product label before dosing.';$('inputStatus').className='status';
  } else {
   $('doseValue').textContent='—';$('doseUnit').textContent=activeTab==='cl'?c.product.unit:p.product.unit;
   $('resultProduct').textContent='Complete your readings';$('resultCaption').textContent='No dose is shown until the required inputs are valid.';
-  $('refDose').textContent='—';$('changeValue').textContent='—';$('changeNote').textContent='Enter valid measurements to calculate.';
+  $('refDose').textContent=activeTab==='cl'?'—':'No fixed dose';$('changeValue').textContent='—';$('changeNote').textContent='Enter valid measurements to calculate.';
   const errors=showErrors||(Number.isFinite(v)&&v>0&&Number.isFinite(r.current))?r.errors:r.errors.filter(e=>$(e.id).value.trim()!=='');
   $('inputStatus').textContent=errors.length?errors.map(e=>e.message).join(' '):'Enter your pool volume and current reading to begin.';$('inputStatus').className='status'+(errors.length?' bad':'');
   errors.forEach(e=>$(e.id).setAttribute('aria-invalid','true'));
@@ -23394,10 +23435,10 @@ function update(showErrors=false){
  last={v,c,p,profile:d,warnings};return last;
 }
 function setTab(tab){activeTab=tab;update();}
-function captureSettings(){return {schema:'poolwise',version:2,activeTab,settings:Object.fromEntries(settingIds.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))};}
+function captureSettings(){return {schema:'poolwise',version:3,activeTab,settings:Object.fromEntries(settingIds.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))};}
 function importSettings(raw){
  let settings=raw.settings;let legacy=false;
- if(raw.schema!=='poolwise'||raw.version!==2){
+ if(raw.schema!=='poolwise'||![2,3].includes(raw.version)){
   if(raw&&typeof raw==='object'&&!Array.isArray(raw)&&'targetCl'in raw&&('volume'in raw||'surfaceArea'in raw)){
    legacy=true;settings={...initialSettings,...Object.fromEntries(['projectName','projectRef','location','volume','avgDepth','targetCl','currentPh','targetPh'].filter(k=>k in raw).map(k=>[k,String(raw[k])]))};
    settings.currentCl='';if(!Number(settings.volume)&&Number(raw.surfaceArea)>0&&Number(raw.avgDepth)>0)settings.volume=String(Number(raw.surfaceArea)*Number(raw.avgDepth));
@@ -23414,9 +23455,14 @@ function importSettings(raw){
   if(e.type==='number'&&str!==''&&!Number.isFinite(Number(str)))throw Error('Invalid number: '+id);
   next[id]=str;
  }
+ if(raw.version!==3){next.phProduct='poolAcid';next.phMethod='acidDemand';}
+ // A saved water test is not a fresh demand measurement. Preserve chart and
+ // product specifications, but require a new sample result after loading.
+ for(const id of ['acidTestStart','acidTestEnd','acidChartDose'])next[id]='';
+ if(!phProducts[next.phProduct].dryAcid)next.phMethod='label';
  for(const id of settingIds){if($(id).type==='checkbox')$(id).checked=next[id];else $(id).value=next[id];}
  activeTab=raw.activeTab==='ph'?'ph':'cl';lastVolumeUnit=$('volumeUnit').value;update(true);
- toast(legacy?'Original settings imported. Enter a fresh current chlorine reading. Climate multiplier removed.':'Settings loaded. Retest the water before using restored readings.');
+ toast(legacy?'Original settings imported. Enter fresh water readings and a new acid-demand test. Climate multiplier removed.':'Settings loaded. Acid-demand sample results cleared: enter a fresh test. Retest restored water readings before dosing.');
 }
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 function downloadName(ext){const date=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Dubai'});return 'Poolwise-report-'+date+'.'+ext;}
@@ -23432,24 +23478,35 @@ function reportData(){
   if($('showFree').checked)rows.push(['Existing free chlorine mass',doseText(c.freeGrams)+' chlorine equivalent'],['Mass at target',doseText(c.targetGrams)+' chlorine equivalent'],['Total chlorine',Number.isFinite(num('totalCl'))?fmt(num('totalCl'),3)+' ppm':'Not measured'],['Combined chlorine',Number.isFinite(num('totalCl'))?(num('totalCl')>=c.current?fmt(num('totalCl')-c.current,3)+' ppm':'Invalid: total below free'):'Not measured']);
   add('Chlorine calculation',rows);
  }else add('Chlorine calculation',[['Status','Not calculated: '+c.errors.map(e=>e.message).join(' ')]]);
- if(p.ok)add('pH adjustment estimate',[
-  ['Current / required pH',fmt(p.current,3)+' / '+fmt(p.target,3)],['Product',p.product.name],['Label rate',fmt(p.product.rate,3)+' '+p.product.unit+' per 10 m³ per 0.1 pH'],['Estimated total product',doseText(p.dose,p.product.unit)],['First small step reference',doseText(p.firstStep,p.product.unit)+' for up to 0.1 pH; obey any smaller label limit'],['1.0 pH drop reference',p.product.direction<0?doseText(p.perPoint,p.product.unit)+' (linear comparison only)':'Not available for a raising product'],['Limitations','pH response depends on alkalinity and buffering. This label estimate is not an acid/base-demand test. Never treat the 1.0 pH reference as a single dose. Apply small label-approved steps and retest.']
- ]);else add('pH adjustment estimate',[['Status','Not calculated: '+p.errors.map(e=>e.message).join(' ')]]);
+ if(p.product.labelNote)add('Pool Acid product identification',[
+  ['Product',p.product.name],['Chemical / CAS','Sodium bisulphate (sodium hydrogen sulphate), NaHSO₄ / '+p.product.cas],['Pack size',p.product.pack],['Evidence','User-supplied bag photos reviewed 21 September 2026. Packaging reads “Filled for AQUA PLUS” and “Food grade E514(ii)”.'],['Unconfirmed details','Neither NaHSO₄ assay nor dosing rate is stated in the supplied photos. Any strength or rate used below is user-entered, not verified from the photos. Obtain the supplier’s certificate of analysis / technical sheet.']
+ ]);
+ if(p.ok){
+  const rows=[['Current / required pH',fmt(p.current,3)+' / '+fmt(p.target,3)],['Product',p.product.name],['Method',Math.abs(p.delta)<1e-9?'No adjustment needed':p.method==='acidDemand'?'Water-specific acid-demand chart scaling':'Rough manufacturer label guide (not measured demand)']];
+  if(p.demand){const a=p.demand;rows.push(['Test starting / endpoint pH',fmt(a.start,3)+' / '+fmt(a.end,3)],['Test chart dry-acid dose',fmt(a.chartDose,4)+' g'],['Test chart reference pool volume',fmt(a.chartVolume,4)+' m³'],['Test chart NaHSO₄ strength',fmt(a.chartStrength,4)+'% by mass'],['Your Pool Acid NaHSO₄ strength',fmt(a.productStrength,4)+'% by mass'],['Test kit / chart reference',a.source||'Not recorded'],['Calculation',`${fmt(a.chartDose,4)} g × (${fmt(v,4)} / ${fmt(a.chartVolume,4)}) × (${fmt(a.chartStrength,4)} / ${fmt(a.productStrength,4)}). No pH-difference multiplier.`]);}
+  else if(Math.abs(p.delta)>1e-9)rows.push(['Label rate',fmt(p.product.rate,3)+' '+p.product.unit+' per 10 m³ per 0.1 pH']);
+  rows.push(['Estimated total product',doseText(p.dose,p.product.unit)],['Acid for a 1.0 pH drop','No fixed dose. A separate acid-demand test to that endpoint is needed; no linear extrapolation is provided.'],['Limitations',p.method==='acidDemand'?'Uses the entered fresh water test, its matching sodium bisulphate chart and same-basis NaHSO₄ strengths. Follow product and test-kit batch limits; circulate and retest. Test error, changed water or an incorrect chart changes the result.':'Label guide only; not a water-specific acid/base-demand test. Actual response depends on alkalinity and buffering. Follow label batch limits, circulate and retest.']);
+  add('pH adjustment estimate',rows);
+ }else add('pH adjustment estimate',[['Status','Not calculated: '+p.errors.map(e=>e.message).join(' ')]]);
  const balanced=['alkalinity','hardness','cya'].filter(id=>$(id).value.trim()!=='');
- if(balanced.length)add('Recorded water balance',balanced.map(id=>[{alkalinity:'Total alkalinity',hardness:'Calcium hardness',cya:'Cyanuric acid'}[id],fmt(num(id),3)+' ppm (entered reading)']).concat([['Use','Recorded for reference; these readings do not modify the pH label-rate calculation.']]));
+ if(balanced.length)add('Recorded water balance',balanced.map(id=>[{alkalinity:'Total alkalinity',hardness:'Calcium hardness',cya:'Cyanuric acid'}[id],fmt(num(id),3)+' ppm (entered reading)']).concat([['Use','Recorded for reference; these readings do not modify the pH calculation. Water-specific buffering is captured by an acid-demand test, not by a fixed pH multiplier.']]));
  const fr=forecastRows(c,v);if(fr)add('Ongoing chlorine forecast',[
   ['Measured daily loss',fmt(num('dailyLoss'),3)+' ppm/day'],...fr.map(r=>[r.days+' day'+(r.days===1?'':'s'),doseText(r.dose,c.product.unit)+' product / '+doseText(r.active)+' available chlorine']),['Basis','Budget quantities only, based on constant entered daily loss. Excludes initial correction; not a schedule to dose without testing.']
  ]);
  const savedTab=activeTab;activeTab='cl';const w1=getWarnings(c,p,d);activeTab='ph';const w2=getWarnings(c,p,d);activeTab=savedTab;
  add('Dosing notes',[...new Set([...w1,...w2])].map((w,i)=>['Note '+(i+1),w]));
+ if(p.product.dryAcid)add('PVS sample MSDS reference — not a dosing preset',acidMsdsReference);
  add('Calculation method and references',[
   ['Chlorine formula','Available chlorine (g) = volume (m³) × max(target − current, 0) ppm. Solid product = available chlorine / strength fraction. Liquid litres = available chlorine (g) / available chlorine (g/L).'],
-  ['pH formula','Label dose × volume / 10 × absolute pH change / 0.1. This is an estimate only.'],
+  ['Pool Acid test-chart formula','Dry-acid product (g) = chart dose (g) × pool volume / chart reference pool volume × chart NaHSO₄ % / product NaHSO₄ %. Both volumes in m³; strengths on the same mass basis. The test must start at current pH and end at required pH. No further pH multiplier.'],
+  ['Alternative label guide','Label dose per 10 m³ per 0.1 pH × volume / 10 × absolute pH change / 0.1. Rough estimate only, not a general acid-demand formula. No fixed dose per 1 pH unit.'],
   ['Dubai public pool guidance','DM-HSD-GU81-PSPS2 v3 (2024), pp. 30–31: https://www.dm.gov.ae/documents/hsd-gu81/'],
   ['Dubai private pool guidance','https://www.dm.gov.ae/documents/hsd-gu80/'],
   ['Product references','https://hth-pool.com/en/products/granular-5kg/ ; https://www.bayrol.com/products/manual-treatment/ph-minus ; https://www.bayrol.com/products/manual-treatment/ph-plus'],
   ['Preset verification','HTH Granular reference is minimum 68%. HTH 70%, Aquachlor 70% and HI-CHLON 65G presets were inherited from the supplied app and require pack verification. General strengths are assumptions.'],
-  ['Scope','Routine pool corrections; not a swimming-safety certification, emergency disinfection plan or automatic dosing controller. Sources checked 20 September 2026.']
+  ['Water buffering reference','https://www.usgs.gov/water-science-school/science/alkalinity-and-water'],
+  ['Acid-demand test reference','Taylor Complete Test Kit, pH with acid/base demand: https://taylortechnologies.com/products/complete%E2%84%A2-kit-for-chlorine-bromine-ph-alkalinity-hardness-cya-dpd-high-range-75-oz-bottles'],
+  ['Scope','Routine pool corrections; not a swimming-safety certification, emergency disinfection plan or automatic dosing controller. Pool Acid calculation reviewed 21 September 2026; other references checked 20 September 2026.']
  ]);
  return {sections,summary:[c.ok?'Chlorine product: '+doseText(c.dose,c.product.unit):'Chlorine: not calculated',p.ok?'pH product estimate: '+doseText(p.dose,p.product.unit):'pH: not calculated'].join('  |  ')};
 }
@@ -23493,20 +23550,21 @@ for(const id of settingIds){$(id).addEventListener('input',()=>{if(['brand','pro
 $('brand').addEventListener('change',()=>{const b=brands[$('brand').value];$('strength').value=$('brand').value==='custom'?'':b.strength;$('productForm').value=b.form;$('liquidBasis').value='available';$('density').value='';$('customName').value='';if(b.form==='liquid'||$('brand').value==='custom')$('strengthDetails').open=true;update();});
 $('productForm').addEventListener('change',()=>{$('strength').value='';$('density').value='';update();});
 $('liquidBasis').addEventListener('change',()=>{$('strength').value='';update();});
-$('phProduct').addEventListener('change',()=>{if(!phProducts[$('phProduct').value].rate)$('phRate').value='';update();});
+$('phProduct').addEventListener('change',()=>{const p=phProducts[$('phProduct').value];if(!p.rate)$('phRate').value='';$('acidProductStrength').value='';if(!p.dryAcid)$('phMethod').value='label';update();});
 $('volumeUnit').addEventListener('change',()=>{const n=num('volume');if(Number.isFinite(n))$('volume').value=String(Number((n*factors[lastVolumeUnit]/factors[$('volumeUnit').value]).toPrecision(12)));lastVolumeUnit=$('volumeUnit').value;update();});
 $('profile').addEventListener('change',()=>{const id=$('profile').value;if(id==='warmCya')$('stabilized').value='yes';if(id==='warmNoCya'||id==='indoor')$('stabilized').value='no';update();});
 $('applyDefaults').addEventListener('click',()=>{const d=profileData();if(d.cl===null||!d.valid)return;$('targetCl').value=d.cl;$('targetPh').value=d.ph;update();toast('Suggested targets applied. Current measurements unchanged.');});
 $('calculateBtn').addEventListener('click',()=>{const s=update(true),r=activeTab==='cl'?s.c:s.p;if(!r.ok){const e=$(r.errors[0].id);if(e.closest('details'))e.closest('details').open=true;e.focus();return;}if(matchMedia('(max-width:690px)').matches)$('resultSection').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});});
 $('useVolume').addEventListener('click',()=>{const l=num('length'),w=num('width'),d=num('avgDepth'),shape=$('shape').value;const area=shape==='round'?Math.PI*l*l/4:shape==='area'?l:l*w;const v=area*d;if(!(l>0&&d>0&&(shape!=='rectangle'||w>0)&&Number.isFinite(v)&&v<=1000000)){toast('Enter positive dimensions and average depth.');return;}$('volumeUnit').value='m3';lastVolumeUnit='m3';$('volume').value=Number(v.toFixed(4));$('dimensionResult').textContent='Calculated volume: '+fmt(v,4)+' m³. Copied to Pool volume.';update();toast('Calculated volume applied.');});
 $('exampleBtn').addEventListener('click',()=>{if(($('volume').value||$('currentCl').value||$('currentPh').value)&&!confirm('Replace the current readings with a clearly labelled example?'))return;for(const id of settingIds){if($(id).type==='checkbox')$(id).checked=initialSettings[id];else $(id).value=initialSettings[id];}$('volume').value=100;$('currentCl').value=1;$('currentPh').value=7.8;$('projectName').value='Example pool — replace with your measurements';activeTab='cl';lastVolumeUnit='m3';update();toast('Example loaded: 100 m³, chlorine 1 ppm, pH 7.8. Replace with measured values.');});
-$('saveBtn').addEventListener('click',()=>{try{localStorage.setItem('poolwise.v2',JSON.stringify(captureSettings()));toast('Settings saved on this device.');}catch{toast('Browser storage is unavailable. Use Export settings instead.');}});
-$('loadBtn').addEventListener('click',()=>{try{const raw=localStorage.getItem('poolwise.v2')||localStorage.getItem('poolSettings');if(!raw)return toast('No saved settings found.');importSettings(JSON.parse(raw));}catch(e){toast('Could not load settings: '+e.message);}});
+$('saveBtn').addEventListener('click',()=>{try{localStorage.setItem('poolwise.v3',JSON.stringify(captureSettings()));toast('Settings saved. Loading will require a fresh acid-demand test.');}catch{toast('Browser storage is unavailable. Use Export settings instead.');}});
+$('loadBtn').addEventListener('click',()=>{try{const raw=localStorage.getItem('poolwise.v3')||localStorage.getItem('poolwise.v2')||localStorage.getItem('poolSettings');if(!raw)return toast('No saved settings found.');importSettings(JSON.parse(raw));}catch(e){toast('Could not load settings: '+e.message);}});
 $('jsonBtn').addEventListener('click',()=>{download(new Blob([JSON.stringify(captureSettings(),null,2)],{type:'application/json'}),'Poolwise-settings.json');toast('Current settings exported.');});
 $('importBtn').addEventListener('click',()=>$('jsonFile').click());
 $('jsonFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('Settings file is too large.');importSettings(JSON.parse(await file.text()));}catch(err){toast('Import failed: '+err.message);}finally{e.target.value='';}});
 $('resetBtn').addEventListener('click',()=>{if(!confirm('Reset current inputs to Dubai defaults? Saved settings will remain available.'))return;for(const id of settingIds){if($(id).type==='checkbox')$(id).checked=initialSettings[id];else $(id).value=initialSettings[id];}activeTab='cl';lastVolumeUnit='m3';$('dimensionResult').textContent='For a sloping floor, average shallow and deep depths if the slope is uniform.';update();toast('Inputs reset.');});
 $('pdfBtn').addEventListener('click',()=>runExport($('pdfBtn'),exportPdf));$('wordBtn').addEventListener('click',()=>runExport($('wordBtn'),exportWord));$('csvBtn').addEventListener('click',()=>runExport($('csvBtn'),exportCsv));
+$('acidMsdsReference').innerHTML='<table><tbody>'+acidMsdsReference.map(([key,value])=>`<tr><th scope="row">${esc(key)}</th><td>${esc(value)}</td></tr>`).join('')+'</tbody></table>';
 update();
 
 </script>
